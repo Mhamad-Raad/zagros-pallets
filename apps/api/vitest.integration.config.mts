@@ -1,0 +1,41 @@
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { config } from 'dotenv';
+import swc from 'unplugin-swc';
+import { defineConfig } from 'vitest/config';
+
+// Local runs read the repository-root .env; CI sets the same variables in the job environment.
+config({ path: '../../.env', quiet: true });
+
+// Integration tests run against a real PostgreSQL (DATABASE_URL / DATABASE_MIGRATE_URL of a test DB),
+// one file at a time because they share the database.
+export default defineConfig({
+  oxc: false,
+  plugins: [swc.vite({ module: { type: 'es6' } })],
+  test: {
+    include: ['test/integration/**/*.test.ts'],
+    environment: 'node',
+    setupFiles: ['reflect-metadata', './test/reconcile-after-each.ts'],
+    globalSetup: ['./test/global-setup.ts'],
+    // The application under test connects to the test database as the runtime role.
+    env: {
+      NODE_ENV: 'test',
+      DATABASE_URL: process.env.DATABASE_TEST_URL ?? '',
+      // Request logs would bury the assertion that actually failed.
+      LOG_LEVEL: 'fatal',
+      // Test uploads go to a scratch directory, never into the development one.
+      UPLOADS_DIR: join(tmpdir(), 'pallet-test-uploads'),
+    },
+    fileParallelism: false,
+    testTimeout: 30_000,
+    hookTimeout: 60_000,
+    // §14.1: the modules that move stock and money, and sign people in, stay covered by the business flows.
+    coverage: {
+      provider: 'v8',
+      include: ['src/modules/{orders,returns,ledger,purchases,items,auth}/**'],
+      exclude: ['**/*.test.ts'],
+      reporter: ['text-summary'],
+      thresholds: { lines: 85 },
+    },
+  },
+});

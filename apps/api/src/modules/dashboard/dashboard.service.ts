@@ -1,0 +1,286 @@
+import { Injectable } from '@nestjs/common';
+import {
+  businessToday,
+  dbDateToBusiness,
+  type ActivityEventDto,
+  type ActivityEventKind,
+  type DashboardDto,
+} from '@pallet/shared';
+import type { AuthContext } from '../../common/auth-context';
+import { fromAggregate, toSafeMoney, type SqlAggregate } from '../../common/utils/money';
+import { Prisma } from '../../generated/prisma/client';
+import { PrismaService } from '../../prisma/prisma.service';
+import { uploadUrl } from '../uploads/uploads.mapper';
+import { toCustomerRef } from '../customers/customers.mapper';
+import { LOW_STOCK_SQL } from '../items/low-stock';
+import { openOrderTotalsByCustomer } from '../orders/open-order-totals';
+
+const RECENT = 10;
+const LOW_STOCK_LISTED = 10;
+
+/** The home page (§6.22): each section only for a viewer allowed to see it, absent otherwise (Q12). */
+@Injectable()
+export class DashboardService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async get(actor: AuthContext): Promise<DashboardDto> {
+    const can = (key: Parameters<AuthContext['permissions']['has']>[0]) => actor.permissions.has(key);
+    const [positions, lowStock, recentActivity] = await Promise.all([
+      can('reports.viewPositions') ? this.positions() : undefined,
+      can('items.view') ? this.lowStock() : undefined,
+      can('orders.view') ? this.recentActivity() : undefined,
+    ]);
+    return {
+      ...(positions ? { positions } : {}),
+      ...(lowStock ? { lowStock } : {}),
+      ...(recentActivity ? { recentActivity } : {}),
+    };
+  }
+
+  private async positions(): Promise<NonNullable<DashboardDto['positions']>> {
+    // Rolled up from the per-customer standing totals: one row per customer with an open order.
+    const [row] = await this.prisma.$queryRaw<
+      {
+        pallets_out: SqlAggregate;
+        out_value: SqlAggregate;
+        owed: SqlAggregate;
+        held: SqlAggregate;
+        open_orders: SqlAggregate;
+        open_customers: SqlAggregate;
+      }[]
+    >`
+      SELECT COALESCE(SUM(t.pallets_out), 0)::bigint AS pallets_out,
+             COALESCE(SUM(t.out_value), 0)::bigint AS out_value,
+             COALESCE(SUM(t.owed), 0)::bigint AS owed,
+             COALESCE(SUM(t.held), 0)::bigint AS held,
+             COALESCE(SUM(t.open_order_count), 0)::bigint AS open_orders,
+             COUNT(*)::bigint AS open_customers
+        FROM (${openOrderTotalsByCustomer()}) t`;
+    return {
+      palletsOut: fromAggregate(row?.pallets_out ?? 0),
+      outValue: fromAggregate(row?.out_value ?? 0),
+      owed: fromAggregate(row?.owed ?? 0),
+      held: fromAggregate(row?.held ?? 0),
+      openOrderCount: fromAggregate(row?.open_orders ?? 0),
+      customersWithOpenOrders: fromAggregate(row?.open_customers ?? 0),
+    };
+  }
+
+  private async lowStock(): Promise<NonNullable<DashboardDto['lowStock']>> {
+    const [counted, rows] = await Promise.all([
+      this.prisma.$queryRaw<{ count: SqlAggregate }[]>`
+        SELECT COUNT(*)::bigint AS count FROM items i WHERE ${LOW_STOCK_SQL}`,
+      this.prisma.$queryRaw<{ id: number }[]>`
+        SELECT i.id FROM items i
+         WHERE ${LOW_STOCK_SQL}
+         ORDER BY i.quantity_on_hand - i.min_stock ASC, i.name ASC, i.id ASC
+         LIMIT ${LOW_STOCK_LISTED}`,
+    ]);
+    const items = await this.prisma.item.findMany({
+      where: { id: { in: rows.map((row) => row.id) } },
+      include: { image: { select: { fileName: true } } },
+    });
+    const byId = new Map(items.map((item) => [item.id, item]));
+    return {
+      count: fromAggregate(counted[0]?.count ?? 0),
+      items: rows.flatMap(({ id }) => {
+        const item = byId.get(id);
+        return item && item.minStock !== null
+          ? [
+              {
+                id: item.id,
+                name: item.name,
+                imageUrl: item.image ? uploadUrl(item.image.fileName) : null,
+                quantityOnHand: item.quantityOnHand,
+                minStock: item.minStock,
+              },
+            ]
+          : [];
+      }),
+    };
+  }
+
+  /**
+   * The latest events (§6.22): hand-overs, cancellations, returns, manual payments and refunds, newest
+   * first by when they were recorded. Reversed ones stay, flagged. A customer's return over several orders is one
+   * event (Q161): its orders' returns and their refunds are not listed on their own.
+   *
+   * Each kind contributes only its own newest ten, read backwards from a `(created_at, id)` index (Q62):
+   * the overall newest ten are among them, because within one kind the outer order is the same
+   * `at DESC, id DESC`. Without the inner limits every event ever recorded was sorted on each visit. Returns and
+   * refunds outside a customer return are read from partial indexes of those alone, so a run of visits is never
+   * walked through; a visit's figures are summed in SQL, one row each, however many orders and lines it holds.
+   */
+  private async recentActivity(): Promise<ActivityEventDto[]> {
+    const keys = await this.prisma.$queryRaw<{ kind: ActivityEventKind; id: number; at: Date }[]>`
+      SELECT kind, id, at FROM (
+        (SELECT 'HANDOVER' AS kind, o.id, o.created_at AS at FROM orders o
+          ORDER BY o.created_at DESC, o.id DESC LIMIT ${RECENT})
+        UNION ALL
+        (SELECT 'CANCELLATION', o.id, o.cancelled_at FROM orders o WHERE o.cancelled_at IS NOT NULL
+          ORDER BY o.cancelled_at DESC, o.id DESC LIMIT ${RECENT})
+        UNION ALL
+        (SELECT 'RETURN', r.id, r.created_at FROM returns r WHERE r.customer_return_id IS NULL
+          ORDER BY r.created_at DESC, r.id DESC LIMIT ${RECENT})
+        UNION ALL
+        (SELECT 'CUSTOMER_RETURN', cr.id, cr.created_at FROM customer_returns cr
+          ORDER BY cr.created_at DESC, cr.id DESC LIMIT ${RECENT})
+        UNION ALL
+        (SELECT 'PAYMENT', le.id, le.created_at FROM ledger_entries le WHERE le.type = 'PAYMENT' AND le.source = 'MANUAL'
+          ORDER BY le.created_at DESC, le.id DESC LIMIT ${RECENT})
+        UNION ALL
+        (SELECT 'REFUND', le.id, le.created_at FROM ledger_entries le
+          WHERE le.type = 'REFUND' AND le.customer_return_id IS NULL
+          ORDER BY le.created_at DESC, le.id DESC LIMIT ${RECENT})
+      ) events
+      ORDER BY at DESC, kind ASC, id DESC
+      LIMIT ${RECENT}`;
+    const idsOf = (...kinds: ActivityEventKind[]): number[] =>
+      keys.filter((key) => kinds.includes(key.kind)).map((key) => key.id);
+
+    const [orders, returns, visits, entries] = await Promise.all([
+      this.prisma.order.findMany({
+        where: { id: { in: idsOf('HANDOVER', 'CANCELLATION') } },
+        include: { customer: true, lines: { select: { quantity: true } } },
+      }),
+      this.prisma.palletReturn.findMany({
+        where: { id: { in: idsOf('RETURN') } },
+        include: {
+          order: { include: { customer: true } },
+          lines: { select: { acceptedQuantity: true, damagedQuantity: true } },
+        },
+      }),
+      this.visitTotals(idsOf('CUSTOMER_RETURN')),
+      this.prisma.ledgerEntry.findMany({
+        where: { id: { in: idsOf('PAYMENT', 'REFUND') } },
+        include: { order: { include: { customer: true } }, reversedBy: { select: { id: true } } },
+      }),
+    ]);
+    const orderById = new Map(orders.map((order) => [order.id, order]));
+    const returnById = new Map(returns.map((pr) => [pr.id, pr]));
+    const visitById = new Map(visits.map((visit) => [visit.id, visit]));
+    const entryById = new Map(entries.map((entry) => [entry.id, entry]));
+    const pallets = (lines: { acceptedQuantity: number; damagedQuantity: number }[]) =>
+      lines.reduce((total, line) => total + line.acceptedQuantity + line.damagedQuantity, 0);
+    const single = { customerReturnId: null, orderCount: null, partlyReversed: false };
+
+    return keys.flatMap(({ kind, id, at }): ActivityEventDto[] => {
+      if (kind === 'HANDOVER' || kind === 'CANCELLATION') {
+        const order = orderById.get(id);
+        if (!order) return [];
+        const handover = kind === 'HANDOVER';
+        return [
+          {
+            kind,
+            at: at.toISOString(),
+            // A cancellation happens on the day it is recorded, in Baghdad.
+            date: handover ? dbDateToBusiness(order.date) : businessToday(at),
+            orderId: order.id,
+            orderNumber: order.orderNumber,
+            ...single,
+            customer: toCustomerRef(order.customer),
+            quantity: handover ? order.lines.reduce((total, line) => total + line.quantity, 0) : null,
+            amount: handover ? toSafeMoney(order.depositTotal) : null,
+            reversed: false,
+          },
+        ];
+      }
+      if (kind === 'RETURN') {
+        const pr = returnById.get(id);
+        if (!pr) return [];
+        return [
+          {
+            kind,
+            at: at.toISOString(),
+            date: dbDateToBusiness(pr.date),
+            orderId: pr.orderId,
+            orderNumber: pr.order.orderNumber,
+            ...single,
+            customer: toCustomerRef(pr.order.customer),
+            quantity: pallets(pr.lines),
+            amount: toSafeMoney(pr.refundDue),
+            reversed: pr.reversedAt !== null,
+          },
+        ];
+      }
+      if (kind === 'CUSTOMER_RETURN') {
+        const visit = visitById.get(id);
+        if (!visit) return [];
+        return [
+          {
+            kind,
+            at: at.toISOString(),
+            date: dbDateToBusiness(visit.date),
+            orderId: null,
+            orderNumber: null,
+            customerReturnId: visit.id,
+            orderCount: visit.orderCount,
+            customer: toCustomerRef({
+              id: visit.customerId,
+              name: visit.name,
+              phone: visit.phone,
+              archivedAt: visit.archivedAt,
+            }),
+            quantity: visit.quantity,
+            // The cash handed back, its receipt's headline, since its refunds are not events of their own.
+            amount: fromAggregate(visit.cashRefund),
+            reversed: visit.reversedCount === visit.orderCount,
+            partlyReversed: visit.reversedCount > 0 && visit.reversedCount < visit.orderCount,
+          },
+        ];
+      }
+      const entry = entryById.get(id);
+      if (!entry) return [];
+      return [
+        {
+          kind,
+          at: at.toISOString(),
+          date: dbDateToBusiness(entry.date ?? entry.order.date),
+          orderId: entry.orderId,
+          orderNumber: entry.order.orderNumber,
+          ...single,
+          customer: toCustomerRef(entry.order.customer),
+          quantity: null,
+          amount: toSafeMoney(entry.amount),
+          reversed: entry.reversedBy !== null,
+        },
+      ];
+    });
+  }
+
+  /**
+   * The dashboard's figures of each customer return (Q161), one row each, as recorded — as its receipt says them —
+   * with how many of its returns were reversed since, so the line is flagged partly or wholly reversed as the paper
+   * is stamped; a correction's replacement is its order's own line.
+   */
+  private visitTotals(ids: number[]) {
+    if (ids.length === 0) return Promise.resolve([]);
+    return this.prisma.$queryRaw<
+      {
+        id: number;
+        date: Date;
+        customerId: number;
+        name: string;
+        phone: string;
+        archivedAt: Date | null;
+        orderCount: number;
+        reversedCount: number;
+        quantity: number;
+        cashRefund: SqlAggregate;
+      }[]
+    >`
+      SELECT cr.id, cr.date, c.id AS "customerId", c.name, c.phone, c.archived_at AS "archivedAt",
+             COUNT(*)::int AS "orderCount",
+             COUNT(*) FILTER (WHERE r.reversed_at IS NOT NULL)::int AS "reversedCount",
+             COALESCE(SUM(lines.pallets), 0)::int AS quantity,
+             SUM(r.cash_refund)::bigint AS "cashRefund"
+        FROM customer_returns cr
+        JOIN customers c ON c.id = cr.customer_id
+        JOIN returns r ON r.customer_return_id = cr.id
+        CROSS JOIN LATERAL (
+          SELECT SUM(rl.accepted_quantity + rl.damaged_quantity) AS pallets FROM return_lines rl WHERE rl.return_id = r.id
+        ) lines
+       WHERE cr.id IN (${Prisma.join(ids)})
+       GROUP BY cr.id, c.id`;
+  }
+}

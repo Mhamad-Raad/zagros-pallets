@@ -1,0 +1,1375 @@
+{
+  "common": {
+    "appName": "Zagros Pallets",
+    "currency": "IQD",
+    "search": "Search",
+    "notFound": {
+      "title": "Page not found",
+      "body": "The page you asked for does not exist.",
+      "backHome": "Go to dashboard",
+      "record": "This record does not exist"
+    },
+    "forbidden": {
+      "title": "You do not have permission to open this page",
+      "body": "Ask an administrator for access."
+    },
+    "actions": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "close": "Close",
+      "retry": "Retry",
+      "archive": "Archive",
+      "clearFilters": "Clear filters",
+      "delete": "Delete",
+      "edit": "Edit",
+      "title": "Actions",
+      "done": "Done",
+      "reload": "Reload"
+    },
+    "password": {
+      "show": "Show password",
+      "hide": "Hide password"
+    },
+    "pagination": {
+      "page": "Page {{page}} of {{lastPage}}",
+      "previous": "Previous",
+      "next": "Next",
+      "total": "{{total}} records",
+      "pageSize": "Rows per page",
+      "totalAtLeast": "{{total}}+ records",
+      "pageOpen": "Page {{page}}"
+    },
+    "versionConflict": {
+      "title": "This record changed",
+      "body": "Someone else saved changes while you were editing. Reload to see the latest version, or keep editing and save again.",
+      "reload": "Reload",
+      "keepEditing": "Keep editing"
+    },
+    "upload": {
+      "choose": "Choose image",
+      "replace": "Replace image",
+      "remove": "Remove",
+      "uploading": "Uploading",
+      "preview": "Image preview",
+      "hint": "An image of up to 5 MB."
+    },
+    "active": "Active",
+    "archived": "Archived",
+    "includeArchived": "Include archived",
+    "listSeparator": ", ",
+    "combobox": {
+      "search": "Type to search",
+      "empty": "Nothing found",
+      "loading": "Loading…",
+      "itemDetail": "On hand {{onHand}} · deposit {{deposit}}",
+      "failed": "The search failed."
+    },
+    "datePicker": {
+      "open": "Open calendar",
+      "placeholder": "dd/mm/yyyy"
+    },
+    "dateRange": {
+      "from": "From",
+      "to": "To"
+    },
+    "empty": {
+      "filtered": "Nothing matches these filters"
+    },
+    "unsavedChanges": {
+      "title": "Leave without saving?",
+      "body": "The changes on this form will be lost.",
+      "leave": "Leave"
+    },
+    "months": {
+      "1": "January",
+      "2": "February",
+      "3": "March",
+      "4": "April",
+      "5": "May",
+      "6": "June",
+      "7": "July",
+      "8": "August",
+      "9": "September",
+      "10": "October",
+      "11": "November",
+      "12": "December"
+    },
+    "weekdaysShort": {
+      "0": "Sun",
+      "1": "Mon",
+      "2": "Tue",
+      "3": "Wed",
+      "4": "Thu",
+      "5": "Fri",
+      "6": "Sat"
+    },
+    "fields": {
+      "createdAt": "Added"
+    },
+    "filters": {
+      "title": "Filters",
+      "all": "All",
+      "active": "Active"
+    },
+    "notifications": "Notifications",
+    "errorReference": "Reference: {{id}}",
+    "loading": "Loading…",
+    "appTagline": "Pallet lending",
+    "pageError": {
+      "title": "This page could not be shown",
+      "body": "Something went wrong while opening it. Reload to try again; if it keeps happening, tell your administrator.",
+      "staleTitle": "A new version of the app is available",
+      "staleBody": "The app was updated while this page was open. Reload to continue with the new version."
+    }
+  },
+  "nav": {
+    "primary": "Main navigation",
+    "dashboard": "Dashboard",
+    "history": "History",
+    "users": "Users",
+    "account": "My account",
+    "logout": "Log out",
+    "settings": "Settings",
+    "customers": "Customers",
+    "items": "Items",
+    "drivers": "Drivers",
+    "orders": "Orders",
+    "returns": "Returns",
+    "openMenu": "Open menu",
+    "collapseSidebar": "Collapse sidebar",
+    "expandSidebar": "Expand sidebar",
+    "skipToContent": "Skip to content",
+    "reports": "Reports",
+    "language": "Language",
+    "useDark": "Switch to dark",
+    "useLight": "Switch to light",
+    "groups": {
+      "daily": "Daily work",
+      "records": "Records",
+      "insight": "Insight",
+      "admin": "Administration"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in",
+      "username": "Username",
+      "password": "Password",
+      "submit": "Sign in",
+      "forgotHint": "Forgot your password? Ask an administrator to reset it.",
+      "demoTitle": "Demo account",
+      "demoHint": "Try it with this account. Data resets every night.",
+      "demoFill": "Fill in"
+    },
+    "changePassword": {
+      "title": "Change password",
+      "description": "Choose a new password for your account.",
+      "current": "Current password",
+      "new": "New password",
+      "confirm": "Confirm new password",
+      "submit": "Change password",
+      "ruleLength": "At least {{count}} characters",
+      "ruleCommon": "Not a common password"
+    },
+    "loginFailure": {
+      "INVALID": "Wrong password",
+      "LOCKED": "Account temporarily locked",
+      "INACTIVE": "Account deactivated",
+      "ACCOUNT_THROTTLED": "Too many failures on this account; new devices paused"
+    },
+    "logoutFailed": "You are signed out on this device, but the server could not be reached to end the session. It ends the next time this device opens the app while connected.",
+    "idle": {
+      "title": "Are you still there?",
+      "body": "Nothing has been done for a while. Signing out in {{seconds}} s.",
+      "stay": "Stay signed in",
+      "signedOut": "You were signed out after {{minutes}} minutes without activity. Sign in again to continue."
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome, {{name}}",
+    "cards": {
+      "title": "Figures",
+      "palletsOut": "Pallets out",
+      "owed": "Total owed",
+      "held": "Total held",
+      "lowStock": "Low stock items"
+    },
+    "lowStock": {
+      "attention": "Needs restocking"
+    },
+    "quick": {
+      "title": "Quick actions"
+    },
+    "recent": {
+      "title": "Recent activity",
+      "empty": "Nothing recorded yet",
+      "orders": "Orders: {{orders}}",
+      "partlyReversed": "Partly reversed"
+    }
+  },
+  "account": {
+    "title": "My account",
+    "password": {
+      "changed": "Password changed"
+    },
+    "profile": {
+      "title": "Profile",
+      "username": "Username",
+      "displayName": "Display name",
+      "role": "Role",
+      "adminManaged": "Only an administrator can change your username and role.",
+      "saved": "Your name is saved"
+    },
+    "security": {
+      "title": "Security",
+      "logoutAll": "Log out everywhere",
+      "logoutAllHint": "Ends every session, including this one.",
+      "logoutAllConfirm": "You will have to sign in again on every device.",
+      "logoutAllFailed": "You are signed out on this device, but the other sessions could not be ended. Sign in and try again."
+    }
+  },
+  "users": {
+    "list": {
+      "title": "Users",
+      "new": "New user",
+      "empty": "No users match this search",
+      "anyRole": "All roles",
+      "anyStatus": "All statuses"
+    },
+    "new": {
+      "title": "New user",
+      "profile": "Profile",
+      "usernameHint": "Lower-case letters, digits, dot, dash or underscore; 3 to 32 characters.",
+      "initialPassword": "Initial password",
+      "generate": "Generate",
+      "submit": "Create user",
+      "created": "User created"
+    },
+    "detail": {
+      "title": "User",
+      "profile": "Profile",
+      "saved": "Changes saved",
+      "deactivate": "Deactivate",
+      "deactivateTitle": "Deactivate this user?",
+      "deactivateConfirm": "{{name}} will be signed out everywhere and will not be able to sign in again.",
+      "deactivateHint": "An inactive user cannot sign in.",
+      "selfDeactivateHint": "You cannot deactivate your own account.",
+      "activeSessions": "{{count}} active sessions",
+      "selfDemoteHint": "You cannot change your own role."
+    },
+    "fields": {
+      "username": "Username",
+      "displayName": "Display name",
+      "role": "Role",
+      "status": "Status",
+      "lastLogin": "Last sign-in"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "permissions": {
+      "title": "Permissions",
+      "save": "Save permissions",
+      "saved": "Permissions saved",
+      "adminImplicit": "An administrator holds every permission.",
+      "adminOnlyRow": "Administrator only"
+    },
+    "security": {
+      "title": "Security",
+      "newPassword": "New password",
+      "resetPassword": "Reset password",
+      "passwordReset": "Password reset; the user must choose a new one at their next sign-in.",
+      "logoutAll": "Log out everywhere",
+      "logoutAllConfirm": "Every session of {{name}} will end.",
+      "loggedOut": "Sessions ended",
+      "resetPasswordConfirm": "{{name}} will be signed out everywhere and must choose a new password at their next sign-in."
+    }
+  },
+  "history": {
+    "title": "History",
+    "description": "Every action recorded by the system, newest first.",
+    "empty": "Nothing recorded yet",
+    "filters": {
+      "action": "Action",
+      "entityType": "Record type",
+      "allActions": "All actions",
+      "allEntities": "All record types",
+      "allUsers": "All users",
+      "clearUser": "Any user"
+    },
+    "columns": {
+      "time": "Time",
+      "user": "User",
+      "summary": "What happened",
+      "ip": "Address",
+      "action": "Action",
+      "entity": "Record"
+    },
+    "diff": {
+      "field": "Field",
+      "before": "Before",
+      "after": "After"
+    },
+    "countLimited": "More than 10,000 entries match. Only the newest 10,000 can be paged through; narrow the dates to see older ones.",
+    "orderFields": {
+      "creditOverrideBy": "Credit limit passed by user",
+      "creditOverrideAt": "Credit limit passed at",
+      "cancelledAt": "Cancelled at"
+    }
+  },
+  "enums": {
+    "role": {
+      "ADMIN": "Administrator",
+      "EMPLOYEE": "Employee"
+    },
+    "auditAction": {
+      "CREATE": "Created",
+      "UPDATE": "Updated",
+      "DELETE": "Deleted",
+      "CANCEL": "Cancelled",
+      "STOCK_ADJUST": "Stock adjusted",
+      "PAYMENT_CREATE": "Payment recorded",
+      "PAYMENT_REVERSE": "Payment reversed",
+      "RETURN_CREATE": "Return recorded",
+      "RETURN_EDIT": "Return replaced",
+      "RETURN_DELETE": "Return deleted",
+      "REFUND_CREATE": "Refund paid",
+      "REFUND_REVERSE": "Refund reversed",
+      "CREDIT_OVERRIDE": "Credit limit overridden",
+      "LOGIN_SUCCESS": "Signed in",
+      "LOGIN_FAILURE": "Sign-in failed",
+      "LOCKOUT": "Account locked",
+      "LOGOUT": "Signed out",
+      "LOGOUT_ALL": "Signed out everywhere",
+      "SESSION_REUSE_DETECTED": "Session reuse detected",
+      "PASSWORD_CHANGE": "Password changed",
+      "PASSWORD_RESET": "Password reset",
+      "PERMISSION_CHANGE": "Permissions changed",
+      "SETTINGS_CHANGE": "Settings changed",
+      "USER_DEACTIVATE": "User deactivated",
+      "USER_ACTIVATE": "User activated",
+      "UPLOAD_CREATE": "Image uploaded",
+      "HAND_BACK": "Given back",
+      "HAND_BACK_REVERSE": "Give-back undone"
+    },
+    "auditEntityType": {
+      "USER": "User",
+      "SESSION": "Session",
+      "ITEM": "Item",
+      "PURCHASE_BATCH": "Purchase batch",
+      "CUSTOMER": "Customer",
+      "DRIVER": "Driver",
+      "ORDER": "Order",
+      "RETURN": "Return",
+      "LEDGER_ENTRY": "Money entry",
+      "SETTINGS": "Settings",
+      "UPLOAD": "Image",
+      "CUSTOMER_RETURN": "Customer return",
+      "PALLET_CREDIT": "Pallets we owe"
+    },
+    "uploadKind": {
+      "ITEM_IMAGE": "Item image",
+      "FACTORY_LOGO": "Factory logo"
+    },
+    "stockMovementReason": {
+      "BATCH_ADD": "Purchase",
+      "BATCH_EDIT": "Purchase corrected",
+      "BATCH_DELETE": "Purchase deleted",
+      "ORDER_CREATE": "Handed over",
+      "ORDER_LINE_EDIT": "Order corrected",
+      "ORDER_CANCEL": "Order cancelled",
+      "RETURN_ACCEPTED": "Returned",
+      "RETURN_EDIT": "Return corrected",
+      "RETURN_DELETE": "Return deleted",
+      "MANUAL_ADJUSTMENT": "Manual adjustment",
+      "PALLET_CREDIT": "Owed to or given back to a customer"
+    },
+    "paymentType": {
+      "CASH": "Cash",
+      "LENT": "On credit"
+    },
+    "orderStatus": {
+      "OPEN": "Open",
+      "SETTLED": "Settled",
+      "CANCELLED": "Cancelled"
+    },
+    "ledgerEntryType": {
+      "PAYMENT": "Payment",
+      "REFUND": "Refund",
+      "PAYMENT_REVERSAL": "Payment reversed",
+      "REFUND_REVERSAL": "Refund reversed"
+    },
+    "ledgerEntrySource": {
+      "ORDER_CREATE": "Hand-over",
+      "ORDER_LINE_EDIT": "Order corrected",
+      "ORDER_CANCEL": "Order cancelled",
+      "MANUAL": "Recorded by hand",
+      "PAYMENT_DELETE": "Payment deleted",
+      "RETURN_CREATE": "Return",
+      "RETURN_EDIT": "Return corrected",
+      "RETURN_DELETE": "Return deleted"
+    },
+    "activityEventKind": {
+      "HANDOVER": "Hand-over",
+      "CANCELLATION": "Cancellation",
+      "RETURN": "Return",
+      "PAYMENT": "Payment",
+      "REFUND": "Refund",
+      "CUSTOMER_RETURN": "Customer return"
+    },
+    "customerHistoryKind": {
+      "HANDOVER": "Hand-over",
+      "RETURN": "Return",
+      "LEDGER": "Payment or refund",
+      "PALLET": "Pallets we owe"
+    },
+    "palletCreditReason": {
+      "RETURN_SURPLUS": "Extra pallets came back — we owe them",
+      "RETURN_REVERSAL": "Extra pallets taken back (return changed)",
+      "HAND_BACK": "Pallets given back",
+      "ORDER_USE": "Owed pallets went out with an order",
+      "ORDER_CANCEL": "Owed again (order cancelled or changed)",
+      "HAND_BACK_REVERSAL": "Give-back undone"
+    }
+  },
+  "audit": {
+    "summary": {
+      "USER": {
+        "CREATE": "Created user {{username}} as {{role}}",
+        "UPDATE": "Updated {{username}}",
+        "USER_DEACTIVATE": "Deactivated {{username}}",
+        "USER_ACTIVATE": "Activated {{username}}",
+        "PERMISSION_CHANGE": "Changed permissions of {{username}}: {{added}} added, {{removed}} removed",
+        "PASSWORD_RESET": "Reset the password of {{username}}",
+        "PASSWORD_CHANGE": "{{username}} changed their password",
+        "LOGOUT_ALL": "Ended {{families}} sessions of {{username}}",
+        "LOGIN_FAILURE": "Failed sign-in for {{usernameAttempt}} ({{reason}})",
+        "LOCKOUT": "Locked {{usernameAttempt}} for {{lockedMinutes}} minutes"
+      },
+      "SESSION": {
+        "LOGIN_SUCCESS": "{{username}} signed in",
+        "LOGOUT": "{{username}} signed out",
+        "SESSION_REUSE_DETECTED": "A used sign-in token of {{username}} was presented again"
+      },
+      "UPLOAD": {
+        "UPLOAD_CREATE": "Uploaded {{kind}} ({{width}}×{{height}})"
+      },
+      "SETTINGS": {
+        "SETTINGS_CHANGE": "Changed the factory settings"
+      },
+      "ITEM": {
+        "CREATE": "Added item {{name}}",
+        "UPDATE": "Updated item {{name}}",
+        "DELETE": "Archived item {{name}}",
+        "STOCK_ADJUST": "Adjusted the stock of {{name}} by {{quantity}}"
+      },
+      "PURCHASE_BATCH": {
+        "CREATE": "Bought {{quantity}} of {{itemName}}",
+        "UPDATE": "Corrected a purchase of {{itemName}}",
+        "DELETE": "Deleted a purchase of {{quantity}} {{itemName}}"
+      },
+      "CUSTOMER": {
+        "CREATE": "Added customer {{name}}",
+        "UPDATE": "Updated customer {{name}}",
+        "DELETE": "Archived customer {{name}}"
+      },
+      "DRIVER": {
+        "CREATE": "Added driver {{name}}",
+        "UPDATE": "Updated driver {{name}}",
+        "DELETE": "Archived driver {{name}}"
+      },
+      "ORDER": {
+        "CREATE": "Order #{{orderNumber}} for {{customerName}} ({{paymentType}}, {{depositTotal}})",
+        "CREDIT_OVERRIDE": "Credit limit overridden by {{excess}} on order #{{orderNumber}} for {{customerName}}",
+        "UPDATE": "Order #{{orderNumber}} updated",
+        "CANCEL": "Order #{{orderNumber}} for {{customerName}} cancelled"
+      },
+      "LEDGER_ENTRY": {
+        "PAYMENT_CREATE": "Payment of {{amount}} on order #{{orderNumber}}",
+        "PAYMENT_REVERSE": "Payment of {{amount}} reversed on order #{{orderNumber}}",
+        "REFUND_CREATE": "Refund of {{amount}} on order #{{orderNumber}}",
+        "REFUND_REVERSE": "Refund of {{amount}} reversed on order #{{orderNumber}}"
+      },
+      "RETURN": {
+        "RETURN_CREATE": "Return on order #{{orderNumber}}: {{accepted}} accepted, {{damaged}} damaged, credit {{refundDue}}, cash refund {{cashRefund}}",
+        "RETURN_EDIT": "Return on order #{{orderNumber}} corrected; replaced by return #{{newReturnId}}",
+        "RETURN_DELETE": "Return on order #{{orderNumber}} deleted"
+      },
+      "CUSTOMER_RETURN": {
+        "RETURN_CREATE": "Return of {{customerName}} (orders: {{orders}}): {{accepted}} accepted, {{damaged}} damaged, credit {{refundDue}}, cash refund {{cashRefund}}",
+        "RETURN_EDIT": "Return of {{customerName}} corrected (orders: {{orders}}): {{accepted}} accepted, {{damaged}} damaged, credit {{refundDue}}, cash refund {{cashRefund}}"
+      },
+      "PALLET_CREDIT": {
+        "CREATE": "{{customerName}} brought back more than they had out: we now owe them {{quantity}} × {{itemName}}",
+        "HAND_BACK": "Gave {{quantity}} × {{itemName}} back to {{customerName}}",
+        "HAND_BACK_REVERSE": "Undid giving {{quantity}} × {{itemName}} back to {{customerName}}: owed again"
+      }
+    }
+  },
+  "permissions": {
+    "modules": {
+      "items": "Items",
+      "purchases": "Purchases",
+      "customers": "Customers",
+      "drivers": "Drivers",
+      "orders": "Orders",
+      "returns": "Returns",
+      "payments": "Payments",
+      "reports": "Reports",
+      "audit": "History"
+    },
+    "items_view": "View items",
+    "items_create": "Add items",
+    "items_edit": "Edit items",
+    "items_delete": "Archive items",
+    "items_viewCost": "See cost prices",
+    "items_adjustStock": "Adjust stock",
+    "purchases_view": "View purchase batches",
+    "purchases_create": "Add purchase batches",
+    "purchases_edit": "Edit purchase batches",
+    "purchases_delete": "Delete purchase batches",
+    "customers_view": "View customers",
+    "customers_create": "Add customers",
+    "customers_edit": "Edit customers",
+    "customers_delete": "Archive customers",
+    "drivers_view": "View drivers",
+    "drivers_create": "Add drivers",
+    "drivers_edit": "Edit drivers",
+    "drivers_delete": "Archive drivers",
+    "orders_view": "View orders",
+    "orders_create": "Create orders",
+    "orders_edit": "Edit orders",
+    "orders_cancel": "Cancel orders",
+    "orders_editUnitDeposit": "Change the deposit per pallet",
+    "returns_create": "Record returns",
+    "returns_edit": "Correct returns",
+    "returns_delete": "Delete returns",
+    "payments_create": "Record payments",
+    "payments_delete": "Reverse payments",
+    "reports_viewPositions": "Pallets and money report",
+    "reports_viewPurchases": "Purchases report",
+    "reports_viewActivity": "Activity report",
+    "reports_viewStock": "Stock report",
+    "audit_view": "View history",
+    "users_manage": "Manage users",
+    "settings_edit": "Edit factory settings",
+    "orders_overrideCreditLimit": "Override the credit limit"
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalid_type": "This value is not valid",
+    "too_small": "Must be at least {{minimum}}",
+    "too_big": "Must be at most {{maximum}}",
+    "too_short": "Must be at least {{minimum}} characters",
+    "too_long": "Must be at most {{maximum}} characters",
+    "invalid_format": "This format is not accepted",
+    "invalid_date": "This date does not exist",
+    "invalid_enum": "Choose one of the available options",
+    "not_integer": "Must be a whole number",
+    "unknown_key": "This field is not expected here",
+    "duplicate": "This value is repeated",
+    "invisible_characters": "This name contains hidden or control characters. Remove them",
+    "passwordMismatch": "The two passwords do not match",
+    "stockExceeded": "Only {{available}} on hand",
+    "paymentExceedsOwed": "At most {{owed}} is owed",
+    "returnExceedsOut": "At most {{out}} are out",
+    "damagedRefundTooHigh": "At most {{maximum}}",
+    "returnEmpty": "Enter at least one returned pallet",
+    "unattached": "{{field}}: {{message}}",
+    "fieldNames": {
+      "other": "A field",
+      "inLine": "{{field}} (line {{line}})"
+    }
+  },
+  "errors": {
+    "VALIDATION_FAILED": "Please check the highlighted fields",
+    "CSRF_HEADER_MISSING": "The request was blocked for security reasons. Reload the page.",
+    "NOT_FOUND": "Not found",
+    "ROUTE_NOT_FOUND": "Not found",
+    "VERSION_CONFLICT": "Someone else changed this record. Reload to see the latest version.",
+    "PAYLOAD_TOO_LARGE": "The data sent is too large",
+    "RATE_LIMITED": "Too many attempts. Try again in {{retryAfterSeconds}} seconds.",
+    "INTERNAL_ERROR": "Something went wrong on the server. Try again; if it keeps happening, tell your administrator.",
+    "SERVICE_UNAVAILABLE": "The service is unavailable right now. Try again in a moment.",
+    "BUSINESS_DATE_IN_FUTURE": "The date cannot be in the future",
+    "DATE_RANGE_INVALID": "The start date is after the end date",
+    "AUTH_REQUIRED": "Please sign in",
+    "AUTH_TOKEN_EXPIRED": "Your session expired. Please sign in again.",
+    "AUTH_TOKEN_INVALID": "Your session is no longer valid. Please sign in again.",
+    "AUTH_INVALID_CREDENTIALS": "The username or password is incorrect",
+    "LOGIN_THROTTLED": "Too many wrong passwords. Wait, then try again. Minutes to wait: {{retryAfterMinutes}}",
+    "LOGIN_ACCOUNT_THROTTLED": "Too many failed sign-ins on this account from other places. You can still sign in from a network or place you have signed in from before; otherwise wait {{retryAfterMinutes}} minutes and try again.",
+    "AUTH_REFRESH_INVALID": "Your session ended. Please sign in again.",
+    "PASSWORD_CHANGE_REQUIRED": "You must change your password first",
+    "CURRENT_PASSWORD_INCORRECT": "The current password is incorrect",
+    "CURRENT_PASSWORD_LOCKED": "The current password was entered wrongly too many times. Try again in {{retryAfterMinutes}} minutes.",
+    "PASSWORD_TOO_SHORT": "The password is too short",
+    "PASSWORD_TOO_LONG": "The password is too long",
+    "PASSWORD_TOO_COMMON": "This password is too easy to guess",
+    "PASSWORD_SAME_AS_CURRENT": "The new password is the same as the current one",
+    "PERMISSION_DENIED": "You do not have permission for this",
+    "ADMIN_ONLY": "Only an administrator can do this",
+    "USER_NOT_FOUND": "User not found",
+    "USERNAME_TAKEN": "This username is already taken",
+    "DISPLAY_NAME_TAKEN": "Another active user already has this display name. Choose a different one",
+    "SELF_DEACTIVATE_FORBIDDEN": "You cannot deactivate your own account",
+    "SELF_DEMOTE_FORBIDDEN": "You cannot remove your own administrator role",
+    "LAST_ADMIN_GUARD": "There must always be one active administrator",
+    "PERMISSION_KEY_UNKNOWN": "An unknown permission was requested",
+    "PERMISSION_NOT_GRANTABLE": "This permission cannot be granted to an employee",
+    "PERMISSION_DEPENDENCY_MISSING": "Another permission is needed first",
+    "PERMISSIONS_ADMIN_IMPLICIT": "An administrator already holds every permission",
+    "UPLOAD_MISSING_FILE": "No file was chosen",
+    "UPLOAD_TYPE_NOT_ALLOWED": "This file type is not allowed",
+    "UPLOAD_TOO_LARGE": "The image is too large",
+    "UPLOAD_INVALID_IMAGE": "The file is not a valid image",
+    "UPLOAD_NOT_FOUND": "The image was not found",
+    "UPLOAD_KIND_MISMATCH": "The image does not belong here",
+    "ITEM_NOT_FOUND": "Item not found",
+    "ITEM_ARCHIVED": "This item is archived",
+    "ITEM_ALREADY_ARCHIVED": "This item is already archived",
+    "STOCK_INSUFFICIENT": "There is not enough stock",
+    "BATCH_NOT_FOUND": "Purchase batch not found",
+    "CUSTOMER_NOT_FOUND": "Customer not found",
+    "CUSTOMER_ARCHIVED": "This customer is archived: no more pallets can go out to them. Returns, payments and lower quantities still work.",
+    "CUSTOMER_ALREADY_ARCHIVED": "This customer is already archived",
+    "CUSTOMER_PHONE_DUPLICATE": "Another customer already has this phone number",
+    "CUSTOMER_HAS_OPEN_ORDERS": "This customer still has open orders",
+    "CUSTOMER_CREDIT_LIMIT_ADMIN_ONLY": "Only an administrator can set or change a customer’s credit limit. Leave it as it is, or ask an administrator.",
+    "DRIVER_NOT_FOUND": "Driver not found",
+    "DRIVER_ARCHIVED": "This driver is archived",
+    "DRIVER_ALREADY_ARCHIVED": "This driver is already archived",
+    "DRIVER_PHONE_DUPLICATE": "Another driver already has this phone number",
+    "ORDER_NOT_FOUND": "Order not found",
+    "ORDER_CANCELLED": "This order is cancelled",
+    "ORDER_HAS_ACTIVITY": "This order already has returns or payments",
+    "ORDER_DATE_AFTER_ACTIVITY": "The date is after a return or payment on this order",
+    "CREDIT_LIMIT_EXCEEDED": "This exceeds the credit limit by {{excess}} IQD.",
+    "UNIT_DEPOSIT_NOT_PERMITTED": "You may not change the deposit per pallet",
+    "RETURN_NOT_FOUND": "Return not found",
+    "RETURN_EMPTY": "Enter at least one pallet",
+    "RETURN_LINE_NOT_IN_ORDER": "This item is not on the order",
+    "RETURN_DUPLICATE_LINE": "The same item appears twice",
+    "RETURN_EXCEEDS_OUT": "This return lists more pallets than are still out on the order.",
+    "DAMAGED_REFUND_TOO_HIGH": "The damaged refund is higher than the deposit",
+    "RETURN_ALREADY_REVERSED": "This return was already reversed",
+    "RETURN_DATE_BEFORE_ORDER_DATE": "The return is dated before the order",
+    "PAYMENT_ORDER_NOT_LENT": "This order was paid in cash",
+    "PAYMENT_EXCEEDS_OWED": "This payment is more than the amount still owed.",
+    "PAYMENT_DATE_BEFORE_ORDER_DATE": "The payment is dated before the order",
+    "LEDGER_ENTRY_NOT_FOUND": "Money entry not found",
+    "LEDGER_ENTRY_NOT_REVERSIBLE": "This entry cannot be reversed",
+    "LEDGER_ENTRY_ALREADY_REVERSED": "This entry was already reversed",
+    "LEDGER_ENTRY_NO_RECEIPT": "This entry has no receipt",
+    "IDEMPOTENCY_KEY_REQUIRED": "The request is missing its safety key",
+    "IDEMPOTENCY_KEY_INVALID": "The safety key of the request is not valid",
+    "IDEMPOTENCY_KEY_REUSED": "This key was used for a different request",
+    "NETWORK_ERROR": "No connection to the server. Check the connection and try again.",
+    "REQUEST_TIMEOUT": "The server did not answer in time. If you were saving, the change may have gone through: reload the page to check before trying again.",
+    "UNKNOWN_ERROR": "Something went wrong. Try again.",
+    "ORDER_LINE_HAS_RETURNS": "This line has returns in its history and cannot be removed; lower its quantity instead",
+    "CUSTOMER_RETURN_NOT_FOUND": "Customer return not found",
+    "PALLET_SURPLUS_STILL_OUT": "More than is out can come back only once every pallet of that type is back",
+    "PALLET_SURPLUS_NOT_RETURNED": "Extra pallets can come back only of a type this return takes back",
+    "PALLET_CREDIT_GIVEN_BACK": "Extra pallets of this return were given back already; it can no longer be corrected or deleted",
+    "PALLET_CREDIT_INSUFFICIENT": "The factory does not owe them that many",
+    "PALLET_CREDIT_OUTSTANDING": "The factory still owes this customer pallets of that type; give them back first",
+    "HAND_BACK_NOT_FOUND": "Give-back not found",
+    "HAND_BACK_UNDO_WHILE_OUT": "They have pallets of this type out since: record their return first, then undo"
+  },
+  "settings": {
+    "title": "Settings",
+    "receiptHint": "Shown on every printed receipt.",
+    "saved": "Settings saved",
+    "fields": {
+      "factoryName": "Factory name",
+      "phone": "Phone",
+      "address": "Address",
+      "logo": "Logo"
+    },
+    "description": "Your screen, and the factory's details.",
+    "appearance": {
+      "title": "Appearance",
+      "hint": "How the app looks on this computer. Saved in this browser only.",
+      "modeTitle": "Light or dark",
+      "modeHint": "Choose one, or follow the computer's setting.",
+      "modes": {
+        "light": "Light",
+        "dark": "Dark",
+        "system": "Match the computer"
+      },
+      "modeDescriptions": {
+        "light": "Bright surfaces for daytime",
+        "dark": "Easier on the eyes at night",
+        "system": "Switches with the computer"
+      },
+      "paletteTitle": "Colour theme",
+      "paletteHint": "Colours the whole screen: buttons, the sidebar and every surface.",
+      "palettes": {
+        "harbor": "Harbor",
+        "lagoon": "Lagoon",
+        "forest": "Forest",
+        "timber": "Timber",
+        "clay": "Clay",
+        "plum": "Plum",
+        "graphite": "Graphite"
+      },
+      "paletteDescriptions": {
+        "harbor": "Calm deep blue",
+        "lagoon": "Fresh blue-green",
+        "forest": "Steady green",
+        "timber": "Warm wood brown",
+        "clay": "Earthy terracotta",
+        "plum": "Rich purple",
+        "graphite": "Quiet greys"
+      },
+      "fontTitle": "Typeface",
+      "fontHint": "Every one carries all Kurdish letters, Arabic and Latin.",
+      "fonts": {
+        "inter": "Inter and Noto",
+        "vazirmatn": "Vazirmatn",
+        "plex": "IBM Plex",
+        "kufi": "Noto Kufi",
+        "naskh": "Noto Naskh"
+      },
+      "fontDescriptions": {
+        "inter": "Clear and modern",
+        "vazirmatn": "Rounded and friendly",
+        "plex": "Crisp and technical",
+        "kufi": "Geometric and bold",
+        "naskh": "Traditional book style"
+      },
+      "sizeTitle": "Text size",
+      "sizeHint": "Makes everything larger or smaller: text, fields and buttons alike.",
+      "sizes": {
+        "sm": "Small",
+        "md": "Normal",
+        "lg": "Large",
+        "xl": "Extra large"
+      },
+      "sizeSampleLabel": "Sample field",
+      "sizeSample": "Erbil Pallet Factory",
+      "languageTitle": "Language",
+      "languageHint": "The language of the whole app; Kurdish and Arabic read right to left."
+    },
+    "factory": {
+      "title": "Factory details",
+      "hint": "Shown on every printed receipt. Only an administrator can change them."
+    }
+  },
+  "items": {
+    "list": {
+      "title": "Items",
+      "new": "New item",
+      "empty": "No items yet. Add the first one.",
+      "lowStockOnly": "Low stock"
+    },
+    "lowStock": "Low stock",
+    "new": {
+      "title": "New item"
+    },
+    "edit": {
+      "title": "Edit item"
+    },
+    "detail": {
+      "title": "Item",
+      "backToList": "Back to items",
+      "archivedBanner": "This item is archived: it cannot be edited or bought any more, but its stock can still be adjusted.",
+      "archived": "Item archived",
+      "archiveTitle": "Archive {{name}}?",
+      "archiveBody": "The item stays in the history and on existing orders, but can no longer be chosen for new ones.",
+      "addBatch": "Add purchase",
+      "adjustStock": "Adjust stock",
+      "noMinStock": "Not set",
+      "tabs": {
+        "movements": "Stock movements",
+        "batches": "Purchases"
+      }
+    },
+    "fields": {
+      "name": "Name",
+      "image": "Image",
+      "depositPrice": "Deposit price",
+      "quantityOnHand": "On hand",
+      "quantityOut": "Out with customers",
+      "damagedTotal": "Damaged",
+      "minStock": "Minimum stock",
+      "status": "Status"
+    },
+    "form": {
+      "saved": "Item saved",
+      "created": "Item added",
+      "depositPriceHelp": "Changing the price never changes existing orders.",
+      "minStockHelp": "Leave empty for no low-stock warning.",
+      "initialStock": "Initial stock",
+      "addInitialStock": "Add initial stock",
+      "noInitialStockHelp": "Without initial stock the item starts at 0.",
+      "noInitialStock": "None"
+    },
+    "adjust": {
+      "title": "Adjust stock",
+      "description": "On hand now: {{onHand}}",
+      "quantity": "Change",
+      "quantityHelp": "A positive number adds pallets; a negative one, with a minus sign, takes them out.",
+      "notZero": "The change cannot be zero",
+      "note": "Reason",
+      "submit": "Adjust",
+      "done": "Stock adjusted"
+    },
+    "movements": {
+      "time": "Time",
+      "reason": "Reason",
+      "quantity": "Quantity",
+      "reference": "Reference",
+      "note": "Note",
+      "user": "By",
+      "batchReference": "Purchase #{{id}}",
+      "empty": "No stock movements yet"
+    },
+    "stock": {
+      "insufficient": "Not enough stock: {{requested}} needed, {{available}} available"
+    }
+  },
+  "purchases": {
+    "newTitle": "Add purchase",
+    "editTitle": "Correct purchase",
+    "created": "Purchase recorded",
+    "saved": "Purchase corrected",
+    "deleted": "Purchase deleted",
+    "deleteTitle": "Delete this purchase?",
+    "deleteBody": "Its pallets are taken back out of stock. The deletion stays in the history.",
+    "empty": "No purchases recorded yet",
+    "fields": {
+      "date": "Date",
+      "quantity": "Quantity",
+      "unitCost": "Unit cost",
+      "totalCost": "Total cost",
+      "note": "Note"
+    }
+  },
+  "customers": {
+    "list": {
+      "title": "Customers",
+      "new": "New customer",
+      "empty": "No customers yet. Add the first one.",
+      "hasOpenOrders": "With open orders"
+    },
+    "noLimit": "No limit",
+    "new": {
+      "title": "New customer"
+    },
+    "edit": {
+      "title": "Edit customer"
+    },
+    "detail": {
+      "title": "Customer",
+      "backToList": "Back to customers",
+      "archivedBanner": "This customer is archived and can no longer take new orders.",
+      "archived": "Customer archived",
+      "archiveTitle": "Archive {{name}}?",
+      "archiveBody": "The customer stays in the history and on past orders, but cannot take new ones. A customer with open orders cannot be archived.",
+      "overLimit": "Over limit"
+    },
+    "fields": {
+      "name": "Name",
+      "phone": "Phone",
+      "altPhone": "Second phone",
+      "address": "Address",
+      "creditLimit": "Credit limit",
+      "palletsOut": "Pallets out",
+      "outValue": "Value out",
+      "owed": "Owed",
+      "held": "Deposit held",
+      "headroom": "Credit left",
+      "status": "Status"
+    },
+    "form": {
+      "saved": "Customer saved",
+      "created": "Customer added",
+      "creditLimitHelp": "Leave empty for no limit; 0 means the customer may not take anything.",
+      "creditLimitAdminOnly": "Only an administrator can set or change the credit limit.",
+      "phoneDuplicateWarning": "This number is already used by:",
+      "duplicateTitle": "This phone number is already in use",
+      "duplicateBody": "It belongs to {{names}}. Save anyway?",
+      "saveAnyway": "Save anyway",
+      "contactSection": "Contact details",
+      "contactSectionHint": "Who the customer is and how to reach them",
+      "creditSection": "Credit",
+      "creditSectionHint": "How much the customer may owe at once"
+    },
+    "holdings": {
+      "title": "Pallets held",
+      "item": "Item",
+      "quantityOut": "Out",
+      "sources": "Orders",
+      "empty": "The customer holds no pallets"
+    },
+    "tabs": {
+      "orders": "Orders",
+      "payments": "Payments",
+      "refunds": "Refunds",
+      "money": "Transactions",
+      "history": "History",
+      "label": "Sections"
+    },
+    "history": {
+      "empty": "Nothing recorded for this customer yet",
+      "deleted": "Deleted",
+      "corrected": "Corrected",
+      "pallets": "Pallets"
+    },
+    "palletCredits": {
+      "title": "Pallets we owe them",
+      "giveBack": "Give back",
+      "dialogTitle": "Give pallets back",
+      "dialogDescription": "We owe them {{quantity}} × {{item}}.",
+      "quantity": "How many",
+      "done": "Pallets given back",
+      "overOwed": "At most {{quantity}}",
+      "owed": "Owed",
+      "undo": "Undo",
+      "undone": "Undone",
+      "undoTitle": "Undo this give-back?",
+      "undoBody": "The {{quantity}} × {{item}} are owed to the customer again and come back into stock. Use this only if the give-back was recorded by mistake.",
+      "undoDone": "Give-back undone"
+    }
+  },
+  "drivers": {
+    "list": {
+      "title": "Drivers",
+      "new": "New driver",
+      "empty": "No drivers yet. Add the first one.",
+      "archived": "Driver archived",
+      "archiveTitle": "Archive {{name}}?",
+      "archiveBody": "Orders keep showing this driver, but they can no longer be chosen for new ones."
+    },
+    "detail": {
+      "title": "Driver",
+      "backToList": "Back to drivers",
+      "archivedBanner": "This driver is archived and can no longer be chosen for new orders.",
+      "orders": "Orders"
+    },
+    "dialog": {
+      "newTitle": "New driver",
+      "editTitle": "Edit driver",
+      "created": "Driver added",
+      "saved": "Driver saved",
+      "phoneDuplicateWarning": "This number is already used by:",
+      "duplicateTitle": "This phone number is already in use",
+      "duplicateBody": "It belongs to {{names}}. Save anyway?",
+      "saveAnyway": "Save anyway",
+      "useExisting": "Use {{name}}"
+    },
+    "fields": {
+      "name": "Name",
+      "phone": "Phone",
+      "carNumber": "Car number",
+      "status": "Status"
+    }
+  },
+  "payments": {
+    "automatic": "Automatic",
+    "fields": {
+      "amount": "Amount",
+      "date": "Date",
+      "note": "Note"
+    },
+    "new": {
+      "title": "Record payment",
+      "submit": "Record payment",
+      "created": "Payment recorded on order #{{orderNumber}}",
+      "full": "Full amount",
+      "half": "Half",
+      "summary": "Summary",
+      "owedBefore": "Owed before",
+      "payment": "Payment",
+      "owedAfter": "Owed after",
+      "willSettle": "This order will be settled",
+      "nothingOwed": "Nothing is owed on this order",
+      "backToOrder": "Back to the order"
+    }
+  },
+  "orders": {
+    "list": {
+      "title": "Orders",
+      "new": "New order",
+      "empty": "No orders here yet",
+      "allStatuses": "All",
+      "anyCustomer": "Customer",
+      "anyDriver": "Driver",
+      "anyItem": "Item",
+      "anyPaymentType": "All payment types",
+      "status": "Status"
+    },
+    "fields": {
+      "orderNumber": "Order",
+      "customer": "Customer",
+      "chooseCustomer": "Choose a customer",
+      "driver": "Driver",
+      "chooseDriver": "Choose a driver",
+      "newDriver": "New driver",
+      "date": "Date",
+      "paymentType": "Payment",
+      "notes": "Notes",
+      "depositTotal": "Deposit total",
+      "owed": "Owed",
+      "held": "Deposit held",
+      "palletsOut": "Pallets out",
+      "status": "Status",
+      "outValue": "Out value"
+    },
+    "lines": {
+      "title": "Pallets",
+      "item": "Item",
+      "chooseItem": "Choose an item",
+      "quantity": "Quantity",
+      "unitDeposit": "Deposit each",
+      "lineTotal": "Line total",
+      "returnedAccepted": "Returned",
+      "returnedDamaged": "Damaged",
+      "outQuantity": "Still out",
+      "add": "Add line",
+      "remove": "Remove line",
+      "enterHint": "Enter in the last quantity adds a line"
+    },
+    "new": {
+      "title": "New order",
+      "paidCash": "Paid cash",
+      "lent": "Lent",
+      "submit": "Hand over",
+      "submitWithOverride": "Hand over past the limit",
+      "created": "Order #{{orderNumber}} recorded",
+      "creditExceeded": "Credit limit {{limit}}, already out {{outValue}}: this order of {{newTotal}} passes it by {{excess}}.",
+      "overrideTitle": "Hand over past the credit limit?",
+      "overrideBody": "Credit limit {{limit}}, already out {{outValue}}, this order {{newTotal}}: {{excess}} over. The override is recorded in the history.",
+      "summary": {
+        "title": "Summary",
+        "paysNow": "The customer pays this now",
+        "willOwe": "The customer will owe this",
+        "headroomAfter": "Credit left after",
+        "fromCredit": "From pallets we owe them, no deposit: {{items}}"
+      },
+      "creditUnavailable": "The customer's credit limit could not be checked here; it is still checked when you save."
+    },
+    "detail": {
+      "title": "Order",
+      "backToList": "Back to orders",
+      "createdBanner": "Order {{orderNumber}} is recorded.",
+      "printReceipt": "Print receipt",
+      "cancelOrder": "Cancel order",
+      "cancelled": "Order cancelled",
+      "cancelledBanner": "Cancelled by {{name}} on",
+      "creditOverridden": "Credit limit passed by {{name}} on",
+      "returns": "Returns",
+      "noReturns": "Nothing returned yet",
+      "showReversed": "Show reversed",
+      "reversed": "Reversed",
+      "replacedBy": "Replaced by return #{{id}}",
+      "returnAccepted": "Accepted",
+      "returnDamaged": "Damaged",
+      "damagedRefund": "Damage refund",
+      "refundDue": "Refund due",
+      "cashRefund": "Paid back in cash",
+      "money": "Transactions",
+      "noMoney": "No transactions yet",
+      "recordReturn": "Record return",
+      "recordPayment": "Record payment",
+      "editReturn": "Edit return",
+      "deleteReturn": "Delete return",
+      "deleteReturnTitle": "Delete this return?",
+      "deleteReturnBody": "Its accepted pallets go back out to the customer and any cash refund is reversed. The return stays in the history, marked deleted.",
+      "returnDeleted": "Return deleted",
+      "deletePayment": "Delete payment",
+      "deletePaymentTitle": "Delete this payment?",
+      "deletePaymentBody": "Its amount is owed again. The payment stays in the history with its reversal.",
+      "deletePaymentNote": "Why (optional)",
+      "paymentDeleted": "Payment deleted",
+      "hideReversed": "Hide reversed",
+      "fromCreditTitle": "Given from pallets we owed them",
+      "fromCreditNote": "These went out with no deposit, from the pallets we owed them."
+    },
+    "money": {
+      "date": "Date",
+      "type": "Type",
+      "source": "From",
+      "amount": "Amount",
+      "note": "Note",
+      "createdBy": "By",
+      "reverses": "Reverses #{{id}}",
+      "printReceipt": "Print money receipt",
+      "printAll": "Print all",
+      "printCombined": "Print the combined return receipt"
+    },
+    "cancel": {
+      "confirmTitle": "Cancel order {{orderNumber}}?",
+      "confirmBody": "Its pallets come back into stock and a cash payment is reversed. The order keeps its number."
+    },
+    "edit": {
+      "title": "Edit order",
+      "saved": "Order saved",
+      "immutableHint": "To change the customer or payment type, cancel this order and create a new one.",
+      "linesLocked": "Returns or payments are recorded on this order, so its lines can no longer change.",
+      "cashReissueNotice": "The automatic payment will be re-issued for the new total.",
+      "summary": {
+        "title": "Summary",
+        "newTotal": "New deposit total",
+        "delta": "Change"
+      },
+      "creditExceeded": "Credit limit {{limit}}, already out {{outValue}}: raising this order by {{newTotal}} passes it by {{excess}}.",
+      "overrideBody": "Credit limit {{limit}}, already out {{outValue}}, this increase {{newTotal}}: {{excess}} over. The override is recorded in the history."
+    },
+    "picker": {
+      "title": "Choose the order",
+      "empty": "This customer has no order to choose here",
+      "change": "Change order",
+      "more": "Show older orders"
+    }
+  },
+  "receipt": {
+    "pageTitle": "Hand-over receipt",
+    "title": "Pallet hand-over receipt",
+    "receiptNumber": "Receipt no.",
+    "date": "Date",
+    "factoryPhone": "Phone",
+    "factoryAddress": "Address",
+    "customer": "Customer",
+    "driver": "Driver",
+    "name": "Name",
+    "phone": "Phone number",
+    "address": "Address",
+    "carNumber": "Car number",
+    "item": "Pallet type",
+    "quantity": "Quantity",
+    "unitDeposit": "Deposit per pallet",
+    "lineTotal": "Line total",
+    "returnedAccepted": "Accepted",
+    "returnedDamaged": "Damaged",
+    "outQuantity": "With customer",
+    "printedOn": "Printed on",
+    "depositTotal": "Total deposit",
+    "olderHeading": "Pallets with the customer",
+    "olderEarlier": "Earlier",
+    "olderThisOrder": "This order",
+    "olderAll": "All",
+    "olderUnitDeposit": "Deposit",
+    "olderEarlierValue": "Earlier total",
+    "olderAllValue": "All total",
+    "orderTotal": "This order's deposit",
+    "olderOutValue": "Earlier pallets still with the customer",
+    "allOutValue": "All pallets still with the customer",
+    "combinedTotal": "Total",
+    "paymentType": "Payment type",
+    "paymentCash": "Paid cash",
+    "paymentLent": "Lent (not paid)",
+    "currency": "IQD",
+    "continued": "Continued on the next sheet",
+    "sheetOf": "Sheet {{x}} of {{y}}",
+    "cancelledError": "This order is cancelled; its receipt cannot be printed",
+    "print": "Print",
+    "money": {
+      "pageTitle": "Money receipt",
+      "paymentTitle": "Payment receipt",
+      "refundTitle": "Refund receipt",
+      "receiptNumber": "Money receipt no.",
+      "order": "Order",
+      "orderNumber": "Order no.",
+      "orderDate": "Order date",
+      "owedBefore": "Owed before",
+      "credit": "Value of the pallets returned",
+      "received": "Amount received",
+      "refunded": "Paid to the customer",
+      "owedAfter": "Owed after",
+      "note": "Note",
+      "atHandover": "At the hand-over, in cash",
+      "recordedBy": "Recorded by",
+      "reversed": "Cancelled on {{date}}",
+      "customerReceiptNumber": "Return receipt no.",
+      "returnNumber": "Return no.",
+      "partlyReversed": "Partly cancelled on {{date}}"
+    },
+    "transactions": {
+      "pageTitle": "Transactions receipt",
+      "title": "Transactions receipt",
+      "receiptNumber": "Receipt no.",
+      "type": "Type",
+      "amount": "Amount",
+      "status": "Status",
+      "received": "Total received",
+      "refunded": "Total paid back",
+      "owed": "Owed now"
+    },
+    "preparing": "Preparing the receipt…",
+    "extra": "Extra",
+    "fromCredit": "from pallets we owed",
+    "handBack": {
+      "title": "Pallets given back",
+      "number": "Give-back no.",
+      "owedBefore": "Owed before",
+      "givenBack": "Given back",
+      "owedAfter": "Owed after",
+      "undone": "Undone {{date}}"
+    },
+    "withHeading": "Other orders' pallets returned with this order",
+    "owedHeading": "Customer's pallet balance",
+    "settleCredited": "Taken off by returns",
+    "settleKept": "Kept for damage",
+    "settlePaid": "Paid",
+    "settleOwed": "Owed now"
+  },
+  "returns": {
+    "list": {
+      "title": "Returns",
+      "empty": "No returns here yet",
+      "number": "Return no."
+    },
+    "fields": {
+      "accepted": "Accepted",
+      "damaged": "Damaged",
+      "damagedRefund": "Damage refund",
+      "date": "Date",
+      "notes": "Notes"
+    },
+    "new": {
+      "title": "Record return",
+      "titleReplace": "Correct return",
+      "submit": "Record return",
+      "submitReplace": "Save the corrected return",
+      "lines": "Pallets back",
+      "allAccepted": "All accepted",
+      "everythingAccepted": "Everything returned accepted",
+      "out": "Out",
+      "summary": "Summary",
+      "refundDue": "Refund due",
+      "cashRefund": "Cash refund",
+      "owedBefore": "Owed before",
+      "owedAfter": "Owed after",
+      "outAfter": "Still out after",
+      "compensation": "Compensation assessed",
+      "cashHandover": "Hand the customer {{amount}} IQD now",
+      "stillOwes": "The customer still owes {{amount}}",
+      "notReplaceable": "This return can no longer be corrected",
+      "backToOrder": "Back to the order",
+      "nothingOut": "Nothing is out on this order",
+      "damageSplit": "Of their {{deposit}} deposit, {{refund}} is refunded and {{kept}} is kept for the damage."
+    },
+    "edit": {
+      "title": "Edit return",
+      "backToList": "Back to returns",
+      "cashMore": "{{paid}} IQD was paid back already — hand the customer {{amount}} IQD more now",
+      "cashBack": "{{paid}} IQD was paid back already — take {{amount}} IQD back from the customer",
+      "savedTitle": "Return saved",
+      "alreadyChanged": "This return was already changed — the list shows it as it is now",
+      "cannotDrop": "You may not delete returns: {{orders}} must still take some pallets back"
+    },
+    "customer": {
+      "heading": "Pallets out: {{pallets}} · Orders: {{orders}}",
+      "everythingBack": "Everything came back",
+      "opensInNewTab": "(opens in a new tab)",
+      "less": "One fewer",
+      "more": "One more",
+      "all": "All",
+      "palletsBack": "Pallets coming back",
+      "byOrder": "By order",
+      "orderBack": "{{pallets}} back",
+      "ordersChanged": "This customer's orders changed meanwhile; the list has been reloaded",
+      "nothingOut": "This customer has no pallets out",
+      "savedTitle": "Return recorded",
+      "savedLine": "{{accepted}} accepted · {{damaged}} damaged",
+      "goneTitle": "These counts are for pallets no longer out — returned or cancelled meanwhile — and will not be saved:",
+      "goneDismiss": "Remove them",
+      "tooManyOrders": "This return reaches {{orders}} orders; one save takes at most {{max}}. Record fewer pallets now, oldest first, and the rest in a second return.",
+      "recheckTitle": "The orders of these items changed meanwhile, so their counts were placed again, as below. Check where each goes, then save:",
+      "recheckDone": "I've checked",
+      "outByDate": "{{out}} by {{date}}",
+      "orderOwes": "owes {{amount}} IQD",
+      "fromOrders": "These pallets come from the orders",
+      "extraWarning": "{{extra}} more than the {{out}} they have out — the factory will owe them {{extra}}",
+      "extraTotal": "The factory will owe them {{extra}} pallets",
+      "savedExtra": "Owed to the customer from now on: {{items}}"
+    },
+    "withOrder": {
+      "banner": "Returning with order {{orderNumber}}: every pallet the customer holds is here, oldest order first.",
+      "tag": "With order {{orderNumber}}",
+      "onThisOrder": "On order {{orderNumber}}",
+      "otherOrders": "Other orders",
+      "onThisOrderCount": "{{quantity}} on this order",
+      "nothingOnThisOrder": "Nothing is out on this order any more.",
+      "oldestFirst": "Counts go to the oldest order first, this one in its turn."
+    }
+  },
+  "reports": {
+    "tabs": "Reports",
+    "print": "Print",
+    "total": "Total",
+    "empty": "Nothing to show for these filters",
+    "truncated": "Showing the first 5,000 rows only. Narrow the date range to see the rest.",
+    "truncatedRows": "Showing the first 5,000 rows only; the totals count every row. Narrow the filters to see the rest.",
+    "generatedAt": "Generated {{at}}",
+    "printedFilters": "Filters: {{filters}}",
+    "period": "From {{from}} to {{to}}",
+    "allCustomers": "All customers",
+    "allItems": "All items",
+    "allDrivers": "All drivers",
+    "positions": {
+      "title": "Pallets out & money",
+      "customer": "Customer",
+      "palletsOut": "Pallets out",
+      "outValue": "Value out",
+      "owed": "Owed",
+      "held": "Held",
+      "perItem": "Pallets per item for {{name}}",
+      "totalPerItem": "Pallets out per item"
+    },
+    "purchases": {
+      "title": "Purchases",
+      "date": "Date",
+      "item": "Item",
+      "quantity": "Quantity",
+      "unitCost": "Unit cost",
+      "totalCost": "Total cost",
+      "note": "Note",
+      "subtotal": "Subtotal: {{name}}"
+    },
+    "activity": {
+      "title": "Activity",
+      "date": "Date",
+      "order": "Order",
+      "customer": "Customer",
+      "driver": "Driver",
+      "item": "Item",
+      "pallets": "Pallets",
+      "quantity": "Quantity",
+      "deposit": "Deposit",
+      "handovers": "Hand-overs",
+      "returns": "Returns",
+      "accepted": "Accepted",
+      "damaged": "Damaged",
+      "refundDue": "Refund due",
+      "payments": "Payments",
+      "refunds": "Refunds",
+      "type": "Type",
+      "amount": "Amount",
+      "reversal": "Reversal",
+      "grossReversals": "{{gross}} less {{reversals}} reversed",
+      "moneyOmitted": "Payments and refunds are recorded per order, not per item, so they are left out when an item is chosen.",
+      "compensationAssessed": "Damage compensation assessed",
+      "compensationNote": "Assessed on damaged pallets. On credit orders it may still be part of what the customer owes.",
+      "damagedRefund": "Damage refund",
+      "compensation": "Compensation",
+      "pagedNote": "Each table shows one page of its rows; the totals cover the whole period. Printing prints the pages shown.",
+      "rowsShown": "Rows {{from}}–{{to}} of {{total}}"
+    },
+    "stock": {
+      "title": "Stock levels",
+      "item": "Item",
+      "onHand": "On hand",
+      "out": "Out with customers",
+      "damaged": "Damaged",
+      "minStock": "Minimum",
+      "lowStockOnly": "Only low stock",
+      "lowStockCount": "Low: {{value}}"
+    }
+  }
+}

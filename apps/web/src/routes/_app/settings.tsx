@@ -1,0 +1,171 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { SettingsUpdateBody, type SettingsDto } from '@pallet/shared';
+import { queryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { createFileRoute } from '@tanstack/react-router';
+import { useState, type ReactNode } from 'react';
+import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/app/field';
+import { ImageUploadField, type UploadedImage } from '@/components/app/image-upload-field';
+import { LanguageSwitcher } from '@/components/app/language-switcher';
+import { PageHeader } from '@/components/app/page-header';
+import { PageSkeleton, QueryErrorState } from '@/components/app/states';
+import { AppearanceSettings } from '@/components/settings/appearance-settings';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { usePageTitle } from '@/hooks/use-page-title';
+import { useUnsavedChangesGuard } from '@/hooks/use-unsaved-changes-guard';
+import { apiFetch } from '@/lib/api-client';
+import { handleApiError } from '@/lib/errors';
+import { qk } from '@/lib/query-keys';
+import { prefetch } from '@/lib/prefetch';
+import { useAuth } from '@/lib/auth';
+import { authStore } from '@/lib/auth-store';
+import { WHILE_EDITING } from '@/lib/query-client';
+
+// Open to everyone signed in: appearance is personal; the factory details below it are an admin's (Q50).
+export const Route = createFileRoute('/_app/settings')({
+  loader: ({ context }) =>
+    authStore.getSnapshot().user?.role === 'ADMIN' ? prefetch(context.queryClient, settingsQuery()) : undefined,
+  component: SettingsPage,
+});
+
+function settingsQuery() {
+  return queryOptions({
+    queryKey: qk.settings(),
+    queryFn: () => apiFetch<SettingsDto>('/settings'),
+    // Changes rarely, and only by an admin (§7.8.1).
+    staleTime: 5 * 60_000,
+  });
+}
+
+const TEXT_FIELDS = ['factoryName', 'phone', 'address'] as const;
+
+function SettingsPage() {
+  const { t } = useTranslation();
+  const { user } = useAuth();
+  usePageTitle('settings.title');
+
+  return (
+    <>
+      <PageHeader title={t('settings.title')} description={t('settings.description')} />
+      <AppearanceSettings />
+      <SettingsSection title={t('settings.appearance.languageTitle')} hint={t('settings.appearance.languageHint')}>
+        <LanguageSwitcher />
+      </SettingsSection>
+      {user?.role === 'ADMIN' ? <FactorySettings /> : null}
+    </>
+  );
+}
+
+function SettingsSection({ title, hint, children }: { title: string; hint: string; children: ReactNode }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{hint}</CardDescription>
+      </CardHeader>
+      <CardContent>{children}</CardContent>
+    </Card>
+  );
+}
+
+function FactorySettings() {
+  const { t } = useTranslation();
+  const settings = useQuery({ ...settingsQuery(), ...WHILE_EDITING });
+
+  return (
+    <SettingsSection title={t('settings.factory.title')} hint={t('settings.factory.hint')}>
+      {settings.isPending ? (
+        <PageSkeleton rows={4} />
+      ) : settings.isError ? (
+        <QueryErrorState error={settings.error} onRetry={() => void settings.refetch()} />
+      ) : (
+        // Keyed by version: a save — here or in another tab — remounts the form with what is stored.
+        <SettingsForm key={settings.data.version} settings={settings.data} />
+      )}
+    </SettingsSection>
+  );
+}
+
+function SettingsForm({ settings }: { settings: SettingsDto }) {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  const [logo, setLogo] = useState<UploadedImage | null>(
+    settings.logoUploadId !== null && settings.logoUrl !== null
+      ? { id: settings.logoUploadId, url: settings.logoUrl }
+      : null,
+  );
+
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+
+  const form = useForm({
+    resolver: zodResolver(SettingsUpdateBody),
+    defaultValues: {
+      version: settings.version,
+      factoryName: settings.factoryName,
+      phone: settings.phone,
+      address: settings.address,
+      logoUploadId: settings.logoUploadId,
+    },
+    mode: 'onTouched',
+  });
+  const logoChanged = (logo?.id ?? null) !== settings.logoUploadId;
+  // A save remounts this form (it is keyed by version), which clears the guard with it.
+  const guard = useUnsavedChangesGuard(form.formState.isDirty || logoChanged);
+
+  const save = useMutation({
+    mutationFn: (body: SettingsUpdateBody) => apiFetch<SettingsDto>('/settings', { method: 'PUT', body }),
+    onSuccess: (updated) => {
+      queryClient.setQueryData(qk.settings(), updated);
+      toast.success(t('settings.saved'));
+    },
+    onError: (error) =>
+      handleApiError(error, {
+        setError: form.setError,
+        fields: TEXT_FIELDS,
+        onReload: () => void queryClient.invalidateQueries({ queryKey: qk.settings() }),
+      }),
+  });
+
+  const onSubmit = form.handleSubmit((values) => save.mutate({ ...values, logoUploadId: logo?.id ?? null }));
+
+  return (
+    <form onSubmit={(event) => void onSubmit(event)} className="flex max-w-xl flex-col gap-4" noValidate>
+      {TEXT_FIELDS.map((name) => (
+        <Field key={name}>
+          <FieldLabel htmlFor={name}>{t(`settings.fields.${name}`)}</FieldLabel>
+          <Input
+            id={name}
+            // A phone number reads left to right in every language of the app.
+            dir={name === 'phone' ? 'ltr' : undefined}
+            aria-invalid={Boolean(form.formState.errors[name])}
+            aria-describedby={`${name}-error`}
+            {...form.register(name)}
+          />
+          <FieldError id={`${name}-error`} message={form.formState.errors[name]?.message} />
+        </Field>
+      ))}
+
+      <Field>
+        <FieldLabel htmlFor="logo">{t('settings.fields.logo')}</FieldLabel>
+        <ImageUploadField
+          id="logo"
+          kind="FACTORY_LOGO"
+          value={logo}
+          onChange={setLogo}
+          onUploadingChange={setUploadingLogo}
+        />
+        <FieldDescription>{t('common.upload.hint')}</FieldDescription>
+      </Field>
+
+      {/* Held while a logo is still uploading, or the save would carry the old one. */}
+      <Button type="submit" disabled={save.isPending || uploadingLogo} className="self-start">
+        {t('common.actions.save')}
+      </Button>
+      {guard.dialog}
+    </form>
+  );
+}

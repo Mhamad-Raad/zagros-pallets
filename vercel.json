@@ -1,0 +1,36 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm --filter @pallet/shared build && pnpm --filter @pallet/api build && pnpm --filter @pallet/web build && node api/build.mjs",
+  "outputDirectory": "apps/web/dist",
+  "functions": {
+    "api/index.js": {
+      "maxDuration": 30,
+      "includeFiles": "apps/api/bundle/**"
+    },
+    "api/demo-reset.js": {
+      "maxDuration": 300,
+      "includeFiles": "apps/api/bundle/**"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/demo-reset",
+      "schedule": "0 1 * * *"
+    }
+  ],
+  "regions": [
+    "fra1"
+  ]
+}

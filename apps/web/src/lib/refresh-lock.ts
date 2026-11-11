@@ -1,0 +1,122 @@
+import type { AuthTokenDto } from '@pallet/shared';
+import { ApiError, apiErrorFromResponse } from './api-error';
+import { authStore } from './auth-store';
+import { hasPendingSignOut } from './pending-sign-out';
+import { REQUEST_TIMEOUT_MS, timedSignal } from './request-timeout';
+
+const REFRESH_CHANNEL = 'pallet-auth';
+const PEER_BUSY_MS = 3_000;
+
+let inflight: Promise<boolean> | null = null;
+/** `authStore.endings` when `inflight` was asked for. */
+let inflightEndings = 0;
+let peerBusyUntil = 0;
+let channel: BroadcastChannel | null = null;
+
+interface PeerMessage {
+  type: 'refresh-start' | 'refresh-end';
+  at: number;
+}
+
+function peerChannel(): BroadcastChannel | null {
+  if (typeof BroadcastChannel === 'undefined') return null;
+  channel ??= new BroadcastChannel(REFRESH_CHANNEL);
+  return channel;
+}
+
+/** Listens for other tabs so this one can wait rather than rotate the cookie at the same moment. */
+export function listenForPeerRefreshes(): void {
+  const peers = peerChannel();
+  if (!peers) return;
+  peers.onmessage = (event: MessageEvent<PeerMessage>) => {
+    peerBusyUntil = event.data.type === 'refresh-start' ? event.data.at + PEER_BUSY_MS : 0;
+  };
+}
+
+/** Answers that say nothing about the session: ask again later (with 5xx). */
+const TRANSIENT_STATUSES = new Set([408, 429]);
+
+/**
+ * True when the session was renewed, false when the server refused it (a 401: the cookie is missing,
+ * expired, reused or revoked — the session is gone; or another 4xx no retry would change). No
+ * connection, a timeout, a 5xx while the API restarts or a rate limit say nothing about the session,
+ * so they reject with that ApiError and the caller keeps the user signed in (Q79).
+ */
+async function doRefresh(endings: number): Promise<boolean> {
+  // Signed out in some tab while the server was out of reach (Q80): the cookie is not to be used.
+  if (hasPendingSignOut()) return false;
+  let response: Response;
+  const timer = timedSignal(REQUEST_TIMEOUT_MS);
+  try {
+    response = await fetch('/api/auth/refresh', {
+      method: 'POST',
+      headers: { Accept: 'application/json', 'X-Requested-With': 'pallet-web' },
+      credentials: 'same-origin',
+      signal: timer.signal,
+    });
+  } catch {
+    throw new ApiError(timer.timedOut() ? 'REQUEST_TIMEOUT' : 'NETWORK_ERROR', 0);
+  } finally {
+    timer.clear();
+  }
+
+  if (!response.ok) {
+    // Worth trying again later: the server is restarting, overloaded or throttling (Q79).
+    if (TRANSIENT_STATUSES.has(response.status) || response.status >= 500) throw await apiErrorFromResponse(response);
+    // Any other answer is the server's last word on this cookie — 401 AUTH_REFRESH_INVALID above all.
+    return false;
+  }
+
+  const session = (await response.json()) as AuthTokenDto;
+  // The session ended while this was on its way — a sign-out, or the idle limit (Q136), both of which end it on
+  // the server too. The answer would sign the page back in for the life of an access token.
+  if (authStore.endings !== endings) return false;
+  authStore.setSession(session);
+  return true;
+}
+
+async function waitForPeer(): Promise<void> {
+  while (Date.now() < peerBusyUntil) {
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+}
+
+async function refreshWithPeers(endings: number): Promise<boolean> {
+  const peers = peerChannel();
+  if (!peers) return doRefresh(endings);
+
+  await waitForPeer();
+  peers.postMessage({ type: 'refresh-start', at: Date.now() } satisfies PeerMessage);
+  try {
+    return await doRefresh(endings);
+  } finally {
+    peers.postMessage({ type: 'refresh-end', at: Date.now() } satisfies PeerMessage);
+  }
+}
+
+async function refreshAcrossTabs(endings: number): Promise<boolean> {
+  if (typeof navigator !== 'undefined' && 'locks' in navigator) {
+    return await navigator.locks.request('pallet-auth-refresh', { mode: 'exclusive' }, () => doRefresh(endings));
+  }
+  return await refreshWithPeers(endings);
+}
+
+/**
+ * Resolves true (renewed) or false (refused: the session is gone), and rejects with an ApiError when
+ * the server could not be asked. Refreshes the access token at most once at a time in this tab, and — through the Web Locks API
+ * where it exists — one tab at a time across the whole browser, so rotating the refresh cookie
+ * never races with itself. The server's 30 second grace window covers what the lock cannot.
+ */
+export function refreshAccessToken(): Promise<boolean> {
+  // Counted before any waiting — for the lock, for another tab: a session that ends meanwhile is not renewed.
+  const endings = authStore.endings;
+  // A refresh still on its way for a session that has ended since is not this caller's: it will drop its answer.
+  if (inflight && inflightEndings === endings) return inflight;
+
+  const refresh: Promise<boolean> = refreshAcrossTabs(endings).finally(() => {
+    if (inflight === refresh) inflight = null;
+  });
+  inflight = refresh;
+  inflightEndings = endings;
+  return refresh;
+}

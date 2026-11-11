@@ -1,0 +1,180 @@
+# Production stack (ARCHITECTURE.md §13). Only `caddy` publishes ports.
+# Docker writes its own iptables rules that bypass UFW: the firewall for api/postgres is the
+# ABSENCE of `ports:` entries below, not UFW. Never add `ports:` to api, migrate or postgres.
+name: pallet
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: '50m'
+    max-file: '30'
+
+x-hardening: &hardening
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+
+# Memory and process ceilings (§13.1 sizes the VPS at 4 GB): a runaway container is restarted by Docker
+# instead of taking the host — and every other service — down with it. Image decoding is the API's largest
+# allocation (sharp, ≤ 40 MP inputs); PostgreSQL gets the most, with its 256 MB of shared memory inside.
+x-limits-api: &limits-api
+  mem_limit: 1g
+  pids_limit: 256
+x-limits-caddy: &limits-caddy
+  mem_limit: 256m
+  pids_limit: 128
+x-limits-postgres: &limits-postgres
+  mem_limit: 1536m
+  pids_limit: 256
+
+x-api-env: &api-env
+  NODE_ENV: production
+  TZ: UTC
+  APP_VERSION: ${APP_VERSION:?APP_VERSION is required}
+  API_PORT: '3000'
+  DATABASE_URL: postgresql://pallet_app:${DB_APP_PASSWORD:?DB_APP_PASSWORD is required}@postgres:5432/pallet?schema=public
+  JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:?JWT_ACCESS_SECRET is required}
+  COOKIE_SECURE: 'true'
+  TRUST_PROXY_SUBNET: 172.28.0.0/24
+  UPLOADS_DIR: /data/uploads
+  LOG_LEVEL: ${LOG_LEVEL:-info}
+  SENTRY_DSN: ${SENTRY_DSN:-}
+  SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-production}
+
+services:
+  caddy:
+    image: ghcr.io/mhamad-raad/pallet-caddy:${APP_VERSION:?APP_VERSION is required}
+    restart: unless-stopped
+    <<: [*hardening, *limits-caddy]
+    cap_add:
+      - NET_BIND_SERVICE
+    read_only: true
+    tmpfs:
+      - /tmp
+    ports:
+      - '80:80'
+      - '443:443'
+      - '443:443/udp'
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN:?APP_DOMAIN is required}
+      ACME_EMAIL: ${ACME_EMAIL:?ACME_EMAIL is required}
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      pallet_net:
+        ipv4_address: 172.28.0.10
+    depends_on:
+      api:
+        condition: service_healthy
+    logging: *default-logging
+
+  api:
+    image: ghcr.io/mhamad-raad/pallet-api:${APP_VERSION:?APP_VERSION is required}
+    restart: unless-stopped
+    # tini as PID 1, node its child: the kernel drops signals to a PID 1 that has no handler for them, so the
+    # healthcheck could not stop a hung node that was PID 1 (Q152).
+    init: true
+    <<: [*hardening, *limits-api]
+    read_only: true
+    tmpfs:
+      - /tmp
+    environment:
+      <<: *api-env
+    volumes:
+      - uploads:/data/uploads
+    networks:
+      pallet_net:
+        ipv4_address: 172.28.0.20
+    depends_on:
+      postgres:
+        condition: service_healthy
+    # Docker never restarts an unhealthy container; the check itself stops a hung API after three failures in a
+    # row (≈ 90 s), never in its first 120 s, so a slow first start is not killed and Caddy still comes up (Q152).
+    healthcheck:
+      test: ['CMD', 'node', 'dist/scripts/healthcheck.js']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+    logging: *default-logging
+
+  # One-shot: `docker compose --profile migrate run --rm migrate`
+  # Runs `prisma migrate deploy`, re-applies prisma/sql/grants.sql, seeds first admin + default settings.
+  migrate:
+    image: ghcr.io/mhamad-raad/pallet-api:${APP_VERSION:?APP_VERSION is required}
+    profiles: ['migrate']
+    restart: 'no'
+    <<: [*hardening, *limits-api]
+    read_only: true
+    tmpfs:
+      - /tmp
+    command: ['node', 'dist/scripts/migrate.js']
+    environment:
+      <<: *api-env
+      HOME: /tmp
+      CHECKPOINT_DISABLE: '1'
+      PRISMA_HIDE_UPDATE_MESSAGE: '1'
+      DATABASE_MIGRATE_URL: postgresql://pallet_owner:${DB_OWNER_PASSWORD:?DB_OWNER_PASSWORD is required}@postgres:5432/pallet?schema=public
+      # Read only while `users` is empty (first run); migrate.js fails with a clear message if they are missing then.
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-}
+      ADMIN_DISPLAY_NAME: ${ADMIN_DISPLAY_NAME:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+    networks:
+      - pallet_net
+    depends_on:
+      postgres:
+        condition: service_healthy
+    logging: *default-logging
+
+  postgres:
+    image: postgres:18.6-alpine3.24
+    restart: unless-stopped
+    <<: *limits-postgres
+    # No capability drop: the entrypoint starts as root to chown the data directory, then su-exec drops to
+    # `postgres` by calling setuid itself, which no-new-privileges allows (it only stops setuid binaries).
+    security_opt:
+      - no-new-privileges:true
+    shm_size: 256mb
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      DB_OWNER_PASSWORD: ${DB_OWNER_PASSWORD:?DB_OWNER_PASSWORD is required}
+      DB_APP_PASSWORD: ${DB_APP_PASSWORD:?DB_APP_PASSWORD is required}
+    volumes:
+      # PostgreSQL 18 images keep PGDATA under /var/lib/postgresql/18/docker; mount the parent.
+      - pgdata:/var/lib/postgresql
+      - ./deploy/postgres/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      pallet_net:
+        ipv4_address: 172.28.0.30
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d pallet']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    logging: *default-logging
+
+networks:
+  pallet_net:
+    name: pallet_net
+    driver: bridge
+    ipam:
+      config:
+        # Pinned: Express `trust proxy` = TRUST_PROXY_SUBNET = this subnet. Static IPs (.10/.20/.30)
+        # sit outside ip_range, which is used for dynamic addresses (the migrate container).
+        - subnet: 172.28.0.0/24
+          ip_range: 172.28.0.128/25
+          gateway: 172.28.0.1
+
+volumes:
+  pgdata:
+    name: pallet_pgdata
+  uploads:
+    name: pallet_uploads
+  caddy_data:
+    name: pallet_caddy_data
+  caddy_config:
+    name: pallet_caddy_config

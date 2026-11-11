@@ -1,0 +1,1375 @@
+{
+  "common": {
+    "appName": "منصات زاغروس",
+    "currency": "دينار",
+    "search": "بحث",
+    "notFound": {
+      "title": "الصفحة غير موجودة",
+      "body": "الصفحة التي طلبتها غير موجودة.",
+      "backHome": "الذهاب إلى لوحة المعلومات",
+      "record": "هذا السجل غير موجود"
+    },
+    "forbidden": {
+      "title": "ليس لديك إذن لفتح هذه الصفحة",
+      "body": "اطلب الصلاحية من المسؤول."
+    },
+    "actions": {
+      "save": "حفظ",
+      "cancel": "إلغاء",
+      "close": "إغلاق",
+      "retry": "إعادة المحاولة",
+      "archive": "أرشفة",
+      "clearFilters": "مسح عوامل التصفية",
+      "delete": "حذف",
+      "edit": "تعديل",
+      "title": "الإجراءات",
+      "done": "تم",
+      "reload": "إعادة التحميل"
+    },
+    "password": {
+      "show": "إظهار كلمة المرور",
+      "hide": "إخفاء كلمة المرور"
+    },
+    "pagination": {
+      "page": "صفحة {{page}} من {{lastPage}}",
+      "previous": "السابق",
+      "next": "التالي",
+      "total": "{{total}} سجل",
+      "pageSize": "صفوف في كل صفحة",
+      "totalAtLeast": "{{total}}+ سجل",
+      "pageOpen": "صفحة {{page}}"
+    },
+    "versionConflict": {
+      "title": "تغيّر هذا السجل",
+      "body": "حفظ شخص آخر تغييرات أثناء تحريرك. أعد التحميل لرؤية أحدث نسخة، أو تابع التحرير واحفظ مجدداً.",
+      "reload": "إعادة التحميل",
+      "keepEditing": "متابعة التحرير"
+    },
+    "upload": {
+      "choose": "اختيار صورة",
+      "replace": "استبدال الصورة",
+      "remove": "إزالة",
+      "uploading": "جارٍ الرفع",
+      "preview": "معاينة الصورة",
+      "hint": "صورة حتى 5 ميغابايت."
+    },
+    "active": "نشط",
+    "archived": "مؤرشف",
+    "includeArchived": "إظهار المؤرشف أيضاً",
+    "listSeparator": "، ",
+    "combobox": {
+      "search": "اكتب للبحث",
+      "empty": "لا توجد نتائج",
+      "loading": "جارٍ التحميل…",
+      "itemDetail": "في المخزن {{onHand}} · التأمين {{deposit}}",
+      "failed": "فشل البحث."
+    },
+    "datePicker": {
+      "open": "فتح التقويم",
+      "placeholder": "يوم/شهر/سنة"
+    },
+    "dateRange": {
+      "from": "من",
+      "to": "إلى"
+    },
+    "empty": {
+      "filtered": "لا شيء يطابق عوامل التصفية هذه"
+    },
+    "unsavedChanges": {
+      "title": "المغادرة دون حفظ؟",
+      "body": "ستضيع التغييرات في هذا النموذج.",
+      "leave": "مغادرة"
+    },
+    "months": {
+      "1": "كانون الثاني",
+      "2": "شباط",
+      "3": "آذار",
+      "4": "نيسان",
+      "5": "أيار",
+      "6": "حزيران",
+      "7": "تموز",
+      "8": "آب",
+      "9": "أيلول",
+      "10": "تشرين الأول",
+      "11": "تشرين الثاني",
+      "12": "كانون الأول"
+    },
+    "weekdaysShort": {
+      "0": "الأحد",
+      "1": "الإثنين",
+      "2": "الثلاثاء",
+      "3": "الأربعاء",
+      "4": "الخميس",
+      "5": "الجمعة",
+      "6": "السبت"
+    },
+    "fields": {
+      "createdAt": "تاريخ الإضافة"
+    },
+    "filters": {
+      "title": "عوامل التصفية",
+      "all": "الكل",
+      "active": "نشط"
+    },
+    "notifications": "الإشعارات",
+    "errorReference": "المرجع: {{id}}",
+    "loading": "جارٍ التحميل…",
+    "appTagline": "إعارة المنصات",
+    "pageError": {
+      "title": "تعذّر عرض هذه الصفحة",
+      "body": "حدث خطأ أثناء فتحها. أعد التحميل للمحاولة مجدداً، وإذا تكرر فأبلغ المسؤول.",
+      "staleTitle": "يتوفر إصدار جديد من التطبيق",
+      "staleBody": "حُدِّث التطبيق أثناء فتح هذه الصفحة. أعد التحميل للمتابعة بالإصدار الجديد."
+    }
+  },
+  "nav": {
+    "primary": "التنقل الرئيسي",
+    "dashboard": "لوحة المعلومات",
+    "history": "السجل",
+    "users": "المستخدمون",
+    "account": "حسابي",
+    "logout": "تسجيل الخروج",
+    "settings": "الإعدادات",
+    "customers": "الزبائن",
+    "items": "الأصناف",
+    "drivers": "السائقون",
+    "orders": "الطلبات",
+    "returns": "الإرجاع",
+    "openMenu": "فتح القائمة",
+    "collapseSidebar": "طيّ القائمة الجانبية",
+    "expandSidebar": "توسيع القائمة الجانبية",
+    "skipToContent": "انتقل إلى المحتوى",
+    "reports": "التقارير",
+    "language": "اللغة",
+    "useDark": "التبديل إلى الداكن",
+    "useLight": "التبديل إلى الفاتح",
+    "groups": {
+      "daily": "العمل اليومي",
+      "records": "السجلات",
+      "insight": "التقارير والسجل",
+      "admin": "الإدارة"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "تسجيل الدخول",
+      "username": "اسم المستخدم",
+      "password": "كلمة المرور",
+      "submit": "تسجيل الدخول",
+      "forgotHint": "نسيت كلمة المرور؟ اطلب من المسؤول إعادة تعيينها.",
+      "demoTitle": "حساب تجريبي",
+      "demoHint": "جرّب النظام بهذا الحساب. تُعاد البيانات كل ليلة.",
+      "demoFill": "تعبئة"
+    },
+    "changePassword": {
+      "title": "تغيير كلمة المرور",
+      "description": "اختر كلمة مرور جديدة لحسابك.",
+      "current": "كلمة المرور الحالية",
+      "new": "كلمة المرور الجديدة",
+      "confirm": "تأكيد كلمة المرور الجديدة",
+      "submit": "تغيير كلمة المرور",
+      "ruleLength": "على الأقل {{count}} حرفاً",
+      "ruleCommon": "ألا تكون كلمة مرور شائعة"
+    },
+    "loginFailure": {
+      "INVALID": "كلمة مرور خاطئة",
+      "LOCKED": "الحساب مقفل مؤقتاً",
+      "INACTIVE": "الحساب معطل",
+      "ACCOUNT_THROTTLED": "محاولات فاشلة كثيرة على الحساب؛ الأجهزة الجديدة موقوفة مؤقتاً"
+    },
+    "logoutFailed": "تم تسجيل خروجك من هذا الجهاز، لكن تعذّر الوصول إلى الخادم لإنهاء الجلسة. ستنتهي في المرة القادمة التي يُفتح فيها التطبيق على هذا الجهاز مع اتصال.",
+    "idle": {
+      "title": "هل ما زلت هنا؟",
+      "body": "لم يُسجَّل أي نشاط منذ مدة. تسجيل الخروج بعد {{seconds}} ث.",
+      "stay": "البقاء في الجلسة",
+      "signedOut": "تم تسجيل خروجك بعد {{minutes}} دقيقة من عدم النشاط. سجّل الدخول مجدداً للمتابعة."
+    }
+  },
+  "dashboard": {
+    "title": "لوحة المعلومات",
+    "welcome": "أهلاً، {{name}}",
+    "cards": {
+      "title": "الأرقام",
+      "palletsOut": "الطبليات لدى الزبائن",
+      "owed": "إجمالي المستحق",
+      "held": "إجمالي المحتجز",
+      "lowStock": "أصناف منخفضة المخزون"
+    },
+    "lowStock": {
+      "attention": "تحتاج إلى إعادة التزويد"
+    },
+    "quick": {
+      "title": "إجراءات سريعة"
+    },
+    "recent": {
+      "title": "آخر النشاطات",
+      "empty": "لم يُسجَّل شيء بعد",
+      "orders": "الطلبات: {{orders}}",
+      "partlyReversed": "معكوس جزئياً"
+    }
+  },
+  "account": {
+    "title": "حسابي",
+    "password": {
+      "changed": "تم تغيير كلمة المرور"
+    },
+    "profile": {
+      "title": "الملف الشخصي",
+      "username": "اسم المستخدم",
+      "displayName": "الاسم المعروض",
+      "role": "الدور",
+      "adminManaged": "لا يغيّر اسم المستخدم والدور إلا المسؤول.",
+      "saved": "تم حفظ اسمك"
+    },
+    "security": {
+      "title": "الأمان",
+      "logoutAll": "تسجيل الخروج من كل الأجهزة",
+      "logoutAllHint": "ينهي كل الجلسات، بما فيها هذه.",
+      "logoutAllConfirm": "سيتعين عليك تسجيل الدخول مجدداً على كل جهاز.",
+      "logoutAllFailed": "تم تسجيل خروجك من هذا الجهاز، لكن تعذّر إنهاء الجلسات الأخرى. سجّل الدخول وحاول مجدداً."
+    }
+  },
+  "users": {
+    "list": {
+      "title": "المستخدمون",
+      "new": "مستخدم جديد",
+      "empty": "لا يوجد مستخدم يطابق هذا البحث",
+      "anyRole": "كل الأدوار",
+      "anyStatus": "كل الحالات"
+    },
+    "new": {
+      "title": "مستخدم جديد",
+      "profile": "الملف الشخصي",
+      "usernameHint": "أحرف صغيرة وأرقام ونقطة وشرطة أو شرطة سفلية؛ من 3 إلى 32 حرفاً.",
+      "initialPassword": "كلمة المرور الأولية",
+      "generate": "توليد",
+      "submit": "إنشاء المستخدم",
+      "created": "تم إنشاء المستخدم"
+    },
+    "detail": {
+      "title": "المستخدم",
+      "profile": "الملف الشخصي",
+      "saved": "تم حفظ التغييرات",
+      "deactivate": "تعطيل",
+      "deactivateTitle": "تعطيل هذا المستخدم؟",
+      "deactivateConfirm": "سيتم تسجيل خروج {{name}} من كل مكان ولن يتمكن من الدخول مجدداً.",
+      "deactivateHint": "المستخدم المعطل لا يمكنه تسجيل الدخول.",
+      "selfDeactivateHint": "لا يمكنك تعطيل حسابك.",
+      "activeSessions": "{{count}} جلسة نشطة",
+      "selfDemoteHint": "لا يمكنك تغيير دورك."
+    },
+    "fields": {
+      "username": "اسم المستخدم",
+      "displayName": "الاسم المعروض",
+      "role": "الدور",
+      "status": "الحالة",
+      "lastLogin": "آخر دخول"
+    },
+    "status": {
+      "active": "نشط",
+      "inactive": "معطل"
+    },
+    "permissions": {
+      "title": "الصلاحيات",
+      "save": "حفظ الصلاحيات",
+      "saved": "تم حفظ الصلاحيات",
+      "adminImplicit": "المسؤول يملك كل الصلاحيات.",
+      "adminOnlyRow": "للمسؤول فقط"
+    },
+    "security": {
+      "title": "الأمان",
+      "newPassword": "كلمة المرور الجديدة",
+      "resetPassword": "إعادة تعيين كلمة المرور",
+      "passwordReset": "تمت إعادة تعيين كلمة المرور؛ على المستخدم اختيار كلمة جديدة عند دخوله القادم.",
+      "logoutAll": "تسجيل الخروج من كل الأجهزة",
+      "logoutAllConfirm": "ستنتهي كل جلسات {{name}}.",
+      "loggedOut": "تم إنهاء الجلسات",
+      "resetPasswordConfirm": "سيتم تسجيل خروج {{name}} من كل مكان وعليه اختيار كلمة مرور جديدة عند دخوله القادم."
+    }
+  },
+  "history": {
+    "title": "السجل",
+    "description": "كل إجراء سجله النظام، الأحدث أولاً.",
+    "empty": "لا يوجد شيء مسجل بعد",
+    "filters": {
+      "action": "الإجراء",
+      "entityType": "نوع السجل",
+      "allActions": "كل الإجراءات",
+      "allEntities": "كل أنواع السجلات",
+      "allUsers": "كل المستخدمين",
+      "clearUser": "أي مستخدم"
+    },
+    "columns": {
+      "time": "الوقت",
+      "user": "المستخدم",
+      "summary": "ما الذي حدث",
+      "ip": "العنوان",
+      "action": "الإجراء",
+      "entity": "السجل"
+    },
+    "diff": {
+      "field": "الحقل",
+      "before": "قبل",
+      "after": "بعد"
+    },
+    "countLimited": "أكثر من 10,000 سجل مطابق. لا يمكن تصفح إلا أحدث 10,000؛ ضيّق التواريخ لرؤية الأقدم.",
+    "orderFields": {
+      "creditOverrideBy": "تجاوز حد الائتمان بواسطة المستخدم",
+      "creditOverrideAt": "وقت تجاوز حد الائتمان",
+      "cancelledAt": "وقت الإلغاء"
+    }
+  },
+  "enums": {
+    "role": {
+      "ADMIN": "مسؤول",
+      "EMPLOYEE": "موظف"
+    },
+    "auditAction": {
+      "CREATE": "أُنشئ",
+      "UPDATE": "عُدِّل",
+      "DELETE": "حُذف",
+      "CANCEL": "أُلغي",
+      "STOCK_ADJUST": "عُدّل المخزون",
+      "PAYMENT_CREATE": "سُجّلت دفعة",
+      "PAYMENT_REVERSE": "عُكست الدفعة",
+      "RETURN_CREATE": "سُجّل إرجاع",
+      "RETURN_EDIT": "استُبدل الإرجاع",
+      "RETURN_DELETE": "حُذف الإرجاع",
+      "REFUND_CREATE": "دُفع الاسترداد",
+      "REFUND_REVERSE": "عُكس الاسترداد",
+      "CREDIT_OVERRIDE": "تم تجاوز حد الائتمان",
+      "LOGIN_SUCCESS": "سجّل الدخول",
+      "LOGIN_FAILURE": "فشل تسجيل الدخول",
+      "LOCKOUT": "أُقفل الحساب",
+      "LOGOUT": "سجّل الخروج",
+      "LOGOUT_ALL": "سجّل الخروج من كل الأجهزة",
+      "SESSION_REUSE_DETECTED": "اكتُشف إعادة استخدام جلسة",
+      "PASSWORD_CHANGE": "غُيّرت كلمة المرور",
+      "PASSWORD_RESET": "أُعيد تعيين كلمة المرور",
+      "PERMISSION_CHANGE": "تغيّرت الصلاحيات",
+      "SETTINGS_CHANGE": "تغيّرت الإعدادات",
+      "USER_DEACTIVATE": "عُطّل المستخدم",
+      "USER_ACTIVATE": "فُعّل المستخدم",
+      "UPLOAD_CREATE": "رُفعت صورة",
+      "HAND_BACK": "سُلّم",
+      "HAND_BACK_REVERSE": "إلغاء التسليم"
+    },
+    "auditEntityType": {
+      "USER": "مستخدم",
+      "SESSION": "جلسة",
+      "ITEM": "صنف",
+      "PURCHASE_BATCH": "دفعة شراء",
+      "CUSTOMER": "زبون",
+      "DRIVER": "سائق",
+      "ORDER": "طلب",
+      "RETURN": "إرجاع",
+      "LEDGER_ENTRY": "قيد مالي",
+      "SETTINGS": "الإعدادات",
+      "UPLOAD": "صورة",
+      "CUSTOMER_RETURN": "إرجاع الزبون",
+      "PALLET_CREDIT": "منصات مستحقة للزبون"
+    },
+    "uploadKind": {
+      "ITEM_IMAGE": "صورة صنف",
+      "FACTORY_LOGO": "شعار المصنع"
+    },
+    "stockMovementReason": {
+      "BATCH_ADD": "شراء",
+      "BATCH_EDIT": "تصحيح شراء",
+      "BATCH_DELETE": "حذف شراء",
+      "ORDER_CREATE": "تسليم",
+      "ORDER_LINE_EDIT": "تصحيح طلب",
+      "ORDER_CANCEL": "إلغاء طلب",
+      "RETURN_ACCEPTED": "إرجاع",
+      "RETURN_EDIT": "تصحيح إرجاع",
+      "RETURN_DELETE": "حذف إرجاع",
+      "MANUAL_ADJUSTMENT": "تعديل يدوي",
+      "PALLET_CREDIT": "منصات مستحقة لزبون أو مسلّمة له"
+    },
+    "paymentType": {
+      "CASH": "نقداً",
+      "LENT": "آجل"
+    },
+    "orderStatus": {
+      "OPEN": "مفتوح",
+      "SETTLED": "مُسدَّد",
+      "CANCELLED": "مُلغى"
+    },
+    "ledgerEntryType": {
+      "PAYMENT": "دفعة",
+      "REFUND": "استرداد",
+      "PAYMENT_REVERSAL": "عكس دفعة",
+      "REFUND_REVERSAL": "عكس استرداد"
+    },
+    "ledgerEntrySource": {
+      "ORDER_CREATE": "التسليم",
+      "ORDER_LINE_EDIT": "تصحيح الطلب",
+      "ORDER_CANCEL": "إلغاء الطلب",
+      "MANUAL": "مُسجَّل يدوياً",
+      "PAYMENT_DELETE": "حذف دفعة",
+      "RETURN_CREATE": "إرجاع",
+      "RETURN_EDIT": "تصحيح إرجاع",
+      "RETURN_DELETE": "حذف إرجاع"
+    },
+    "activityEventKind": {
+      "HANDOVER": "تسليم",
+      "CANCELLATION": "إلغاء",
+      "RETURN": "إرجاع",
+      "PAYMENT": "دفعة",
+      "REFUND": "استرداد",
+      "CUSTOMER_RETURN": "إرجاع الزبون"
+    },
+    "customerHistoryKind": {
+      "HANDOVER": "تسليم",
+      "RETURN": "إرجاع",
+      "LEDGER": "دفعة أو استرداد",
+      "PALLET": "منصات مستحقة للزبون"
+    },
+    "palletCreditReason": {
+      "RETURN_SURPLUS": "عادت منصات زائدة — أصبحنا مدينين له",
+      "RETURN_REVERSAL": "سُحبت المنصات الزائدة (تغيّر الإرجاع)",
+      "HAND_BACK": "سُلّمت المنصات",
+      "ORDER_USE": "خرجت المنصات المستحقة مع طلب",
+      "ORDER_CANCEL": "مستحقة من جديد (أُلغي الطلب أو تغيّر)",
+      "HAND_BACK_REVERSAL": "أُلغي التسليم"
+    }
+  },
+  "audit": {
+    "summary": {
+      "USER": {
+        "CREATE": "أنشأ المستخدم {{username}} بدور {{role}}",
+        "UPDATE": "عدّل {{username}}",
+        "USER_DEACTIVATE": "عطّل {{username}}",
+        "USER_ACTIVATE": "فعّل {{username}}",
+        "PERMISSION_CHANGE": "غيّر صلاحيات {{username}}: أضيف {{added}}، أُزيل {{removed}}",
+        "PASSWORD_RESET": "أعاد تعيين كلمة مرور {{username}}",
+        "PASSWORD_CHANGE": "غيّر {{username}} كلمة مروره",
+        "LOGOUT_ALL": "أنهى {{families}} جلسة لـ {{username}}",
+        "LOGIN_FAILURE": "محاولة دخول فاشلة لـ {{usernameAttempt}} ({{reason}})",
+        "LOCKOUT": "أُقفل {{usernameAttempt}} لمدة {{lockedMinutes}} دقيقة"
+      },
+      "SESSION": {
+        "LOGIN_SUCCESS": "سجّل {{username}} الدخول",
+        "LOGOUT": "سجّل {{username}} الخروج",
+        "SESSION_REUSE_DETECTED": "أُعيد تقديم رمز دخول مستخدم لـ {{username}}"
+      },
+      "UPLOAD": {
+        "UPLOAD_CREATE": "رُفع {{kind}} ({{width}}×{{height}})"
+      },
+      "SETTINGS": {
+        "SETTINGS_CHANGE": "غُيّرت إعدادات المصنع"
+      },
+      "ITEM": {
+        "CREATE": "أُضيف الصنف {{name}}",
+        "UPDATE": "عُدّل الصنف {{name}}",
+        "DELETE": "أُرشف الصنف {{name}}",
+        "STOCK_ADJUST": "عُدّل مخزون {{name}} بمقدار {{quantity}}"
+      },
+      "PURCHASE_BATCH": {
+        "CREATE": "اشتُري {{quantity}} من {{itemName}}",
+        "UPDATE": "صُحّحت دفعة شراء من {{itemName}}",
+        "DELETE": "حُذفت دفعة شراء {{quantity}} من {{itemName}}"
+      },
+      "CUSTOMER": {
+        "CREATE": "أُضيف الزبون {{name}}",
+        "UPDATE": "عُدّل الزبون {{name}}",
+        "DELETE": "أُرشف الزبون {{name}}"
+      },
+      "DRIVER": {
+        "CREATE": "أُضيف السائق {{name}}",
+        "UPDATE": "عُدّل السائق {{name}}",
+        "DELETE": "أُرشف السائق {{name}}"
+      },
+      "ORDER": {
+        "CREATE": "الطلب #{{orderNumber}} لـ {{customerName}} ({{paymentType}}، {{depositTotal}})",
+        "CREDIT_OVERRIDE": "تم تجاوز حد الائتمان بمقدار {{excess}} في الطلب #{{orderNumber}} لـ {{customerName}}",
+        "UPDATE": "عُدّل الطلب #{{orderNumber}}",
+        "CANCEL": "أُلغي الطلب #{{orderNumber}} لـ {{customerName}}"
+      },
+      "LEDGER_ENTRY": {
+        "PAYMENT_CREATE": "دفعة بمبلغ {{amount}} على الطلب #{{orderNumber}}",
+        "PAYMENT_REVERSE": "عُكست دفعة بمبلغ {{amount}} على الطلب #{{orderNumber}}",
+        "REFUND_CREATE": "استرداد بمبلغ {{amount}} على الطلب #{{orderNumber}}",
+        "REFUND_REVERSE": "عُكس استرداد بمبلغ {{amount}} على الطلب #{{orderNumber}}"
+      },
+      "RETURN": {
+        "RETURN_CREATE": "إرجاع على الطلب #{{orderNumber}}: {{accepted}} مقبولة، {{damaged}} تالفة، رصيد {{refundDue}}، استرداد نقدي {{cashRefund}}",
+        "RETURN_EDIT": "صُحّح إرجاع الطلب #{{orderNumber}}؛ حلّ محله الإرجاع #{{newReturnId}}",
+        "RETURN_DELETE": "حُذف إرجاع الطلب #{{orderNumber}}"
+      },
+      "CUSTOMER_RETURN": {
+        "RETURN_CREATE": "إرجاع {{customerName}} (الطلبات: {{orders}}): {{accepted}} مقبولة، {{damaged}} تالفة، رصيد {{refundDue}}، استرداد نقدي {{cashRefund}}",
+        "RETURN_EDIT": "صُحّح إرجاع {{customerName}} (الطلبات: {{orders}}): {{accepted}} مقبولة، {{damaged}} تالفة، رصيد {{refundDue}}، استرداد نقدي {{cashRefund}}"
+      },
+      "PALLET_CREDIT": {
+        "CREATE": "أعاد {{customerName}} أكثر مما لديه: أصبحنا مدينين له بـ {{quantity}} × {{itemName}}",
+        "HAND_BACK": "سُلّم {{quantity}} × {{itemName}} إلى {{customerName}}",
+        "HAND_BACK_REVERSE": "أُلغي تسليم {{quantity}} × {{itemName}} إلى {{customerName}}: مستحقة له من جديد"
+      }
+    }
+  },
+  "permissions": {
+    "modules": {
+      "items": "الأصناف",
+      "purchases": "المشتريات",
+      "customers": "الزبائن",
+      "drivers": "السائقون",
+      "orders": "الطلبات",
+      "returns": "الإرجاعات",
+      "payments": "الدفعات",
+      "reports": "التقارير",
+      "audit": "السجل"
+    },
+    "items_view": "عرض الأصناف",
+    "items_create": "إضافة أصناف",
+    "items_edit": "تعديل الأصناف",
+    "items_delete": "أرشفة الأصناف",
+    "items_viewCost": "رؤية أسعار التكلفة",
+    "items_adjustStock": "تعديل المخزون",
+    "purchases_view": "عرض دفعات الشراء",
+    "purchases_create": "إضافة دفعات شراء",
+    "purchases_edit": "تعديل دفعات الشراء",
+    "purchases_delete": "حذف دفعات الشراء",
+    "customers_view": "عرض الزبائن",
+    "customers_create": "إضافة زبائن",
+    "customers_edit": "تعديل الزبائن",
+    "customers_delete": "أرشفة الزبائن",
+    "drivers_view": "عرض السائقين",
+    "drivers_create": "إضافة سائقين",
+    "drivers_edit": "تعديل السائقين",
+    "drivers_delete": "أرشفة السائقين",
+    "orders_view": "عرض الطلبات",
+    "orders_create": "إنشاء طلبات",
+    "orders_edit": "تعديل الطلبات",
+    "orders_cancel": "إلغاء الطلبات",
+    "orders_editUnitDeposit": "تغيير التأمين لكل منصة",
+    "returns_create": "تسجيل الإرجاعات",
+    "returns_edit": "تصحيح الإرجاعات",
+    "returns_delete": "حذف الإرجاعات",
+    "payments_create": "تسجيل الدفعات",
+    "payments_delete": "عكس الدفعات",
+    "reports_viewPositions": "تقرير المنصات والأموال",
+    "reports_viewPurchases": "تقرير المشتريات",
+    "reports_viewActivity": "تقرير النشاط",
+    "reports_viewStock": "تقرير المخزون",
+    "audit_view": "عرض السجل",
+    "users_manage": "إدارة المستخدمين",
+    "settings_edit": "تعديل إعدادات المصنع",
+    "orders_overrideCreditLimit": "تجاوز حد الائتمان"
+  },
+  "validation": {
+    "required": "هذا الحقل مطلوب",
+    "invalid_type": "هذه القيمة غير صالحة",
+    "too_small": "يجب ألا يقل عن {{minimum}}",
+    "too_big": "يجب ألا يزيد عن {{maximum}}",
+    "too_short": "يجب ألا يقل عن {{minimum}} حرفاً",
+    "too_long": "يجب ألا يزيد عن {{maximum}} حرفاً",
+    "invalid_format": "هذه الصيغة غير مقبولة",
+    "invalid_date": "هذا التاريخ غير موجود",
+    "invalid_enum": "اختر أحد الخيارات المتاحة",
+    "not_integer": "يجب أن يكون رقماً صحيحاً",
+    "unknown_key": "هذا الحقل غير متوقع هنا",
+    "duplicate": "هذه القيمة مكررة",
+    "invisible_characters": "يحتوي هذا الاسم على أحرف مخفية أو أحرف تحكم. احذفها",
+    "passwordMismatch": "كلمتا المرور غير متطابقتين",
+    "stockExceeded": "المتوفر {{available}} فقط",
+    "paymentExceedsOwed": "المستحق {{owed}} على الأكثر",
+    "returnExceedsOut": "{{out}} على الأكثر لدى الزبون",
+    "damagedRefundTooHigh": "{{maximum}} على الأكثر",
+    "returnEmpty": "أدخل طبلية مرتجعة واحدة على الأقل",
+    "unattached": "في حقل {{field}}: {{message}}",
+    "fieldNames": {
+      "other": "غير معروف",
+      "inLine": "{{field}} (السطر {{line}})"
+    }
+  },
+  "errors": {
+    "VALIDATION_FAILED": "يرجى مراجعة الحقول المحددة",
+    "CSRF_HEADER_MISSING": "تم حظر الطلب لأسباب أمنية. أعد تحميل الصفحة.",
+    "NOT_FOUND": "غير موجود",
+    "ROUTE_NOT_FOUND": "غير موجود",
+    "VERSION_CONFLICT": "غيّر شخص آخر هذا السجل. أعد التحميل لرؤية أحدث نسخة.",
+    "PAYLOAD_TOO_LARGE": "البيانات المرسلة كبيرة جداً",
+    "RATE_LIMITED": "محاولات كثيرة. حاول بعد {{retryAfterSeconds}} ثانية.",
+    "INTERNAL_ERROR": "حدث خطأ في الخادم. حاول مرة أخرى، وإذا تكرر فأبلغ المسؤول.",
+    "SERVICE_UNAVAILABLE": "الخدمة غير متاحة الآن. حاول مرة أخرى بعد قليل.",
+    "BUSINESS_DATE_IN_FUTURE": "لا يمكن أن يكون التاريخ في المستقبل",
+    "DATE_RANGE_INVALID": "تاريخ البداية بعد تاريخ النهاية",
+    "AUTH_REQUIRED": "يرجى تسجيل الدخول",
+    "AUTH_TOKEN_EXPIRED": "انتهت جلستك. يرجى تسجيل الدخول مجدداً.",
+    "AUTH_TOKEN_INVALID": "لم تعد جلستك صالحة. يرجى تسجيل الدخول مجدداً.",
+    "AUTH_INVALID_CREDENTIALS": "اسم المستخدم أو كلمة المرور غير صحيحة",
+    "LOGIN_THROTTLED": "أُدخلت كلمة المرور خطأً مرات كثيرة. انتظر ثم حاول مجدداً. مدة الانتظار بالدقائق: {{retryAfterMinutes}}",
+    "LOGIN_ACCOUNT_THROTTLED": "محاولات دخول فاشلة كثيرة على هذا الحساب من أماكن أخرى. ما زال بإمكانك الدخول من شبكة أو مكان سجّلت الدخول منه من قبل؛ وإلا فانتظر {{retryAfterMinutes}} دقيقة ثم حاول مجدداً.",
+    "AUTH_REFRESH_INVALID": "انتهت جلستك. يرجى تسجيل الدخول مجدداً.",
+    "PASSWORD_CHANGE_REQUIRED": "عليك تغيير كلمة المرور أولاً",
+    "CURRENT_PASSWORD_INCORRECT": "كلمة المرور الحالية غير صحيحة",
+    "CURRENT_PASSWORD_LOCKED": "أُدخلت كلمة المرور الحالية خطأً مرات كثيرة. حاول بعد {{retryAfterMinutes}} دقيقة.",
+    "PASSWORD_TOO_SHORT": "كلمة المرور قصيرة جداً",
+    "PASSWORD_TOO_LONG": "كلمة المرور طويلة جداً",
+    "PASSWORD_TOO_COMMON": "كلمة المرور هذه سهلة التخمين",
+    "PASSWORD_SAME_AS_CURRENT": "كلمة المرور الجديدة مطابقة للحالية",
+    "PERMISSION_DENIED": "ليس لديك صلاحية لهذا",
+    "ADMIN_ONLY": "المسؤول وحده يمكنه فعل هذا",
+    "USER_NOT_FOUND": "المستخدم غير موجود",
+    "USERNAME_TAKEN": "اسم المستخدم هذا مستخدم بالفعل",
+    "DISPLAY_NAME_TAKEN": "هذا الاسم المعروض لمستخدم نشط آخر. اختر اسماً مختلفاً",
+    "SELF_DEACTIVATE_FORBIDDEN": "لا يمكنك تعطيل حسابك",
+    "SELF_DEMOTE_FORBIDDEN": "لا يمكنك إزالة دور المسؤول عن نفسك",
+    "LAST_ADMIN_GUARD": "يجب أن يبقى مسؤول نشط واحد دائماً",
+    "PERMISSION_KEY_UNKNOWN": "طُلبت صلاحية غير معروفة",
+    "PERMISSION_NOT_GRANTABLE": "لا يمكن منح هذه الصلاحية لموظف",
+    "PERMISSION_DEPENDENCY_MISSING": "مطلوب صلاحية أخرى أولاً",
+    "PERMISSIONS_ADMIN_IMPLICIT": "المسؤول يملك كل الصلاحيات أصلاً",
+    "UPLOAD_MISSING_FILE": "لم يُختر أي ملف",
+    "UPLOAD_TYPE_NOT_ALLOWED": "نوع الملف غير مسموح",
+    "UPLOAD_TOO_LARGE": "الصورة كبيرة جداً",
+    "UPLOAD_INVALID_IMAGE": "الملف ليس صورة صالحة",
+    "UPLOAD_NOT_FOUND": "الصورة غير موجودة",
+    "UPLOAD_KIND_MISMATCH": "الصورة لا تنتمي هنا",
+    "ITEM_NOT_FOUND": "الصنف غير موجود",
+    "ITEM_ARCHIVED": "هذا الصنف مؤرشف",
+    "ITEM_ALREADY_ARCHIVED": "هذا الصنف مؤرشف بالفعل",
+    "STOCK_INSUFFICIENT": "المخزون غير كافٍ",
+    "BATCH_NOT_FOUND": "دفعة الشراء غير موجودة",
+    "CUSTOMER_NOT_FOUND": "الزبون غير موجود",
+    "CUSTOMER_ARCHIVED": "هذا الزبون مؤرشف: لا يمكن تسليمه طبليات أخرى. ما زالت الإرجاعات والدفعات وتخفيض الكميات ممكنة.",
+    "CUSTOMER_ALREADY_ARCHIVED": "هذا الزبون مؤرشف بالفعل",
+    "CUSTOMER_PHONE_DUPLICATE": "زبون آخر يملك رقم الهاتف نفسه",
+    "CUSTOMER_HAS_OPEN_ORDERS": "لدى هذا الزبون طلبات مفتوحة",
+    "CUSTOMER_CREDIT_LIMIT_ADMIN_ONLY": "المسؤول وحده يمكنه تحديد حد الائتمان للزبون أو تغييره. اتركه كما هو، أو اطلب ذلك من مسؤول.",
+    "DRIVER_NOT_FOUND": "السائق غير موجود",
+    "DRIVER_ARCHIVED": "هذا السائق مؤرشف",
+    "DRIVER_ALREADY_ARCHIVED": "هذا السائق مؤرشف بالفعل",
+    "DRIVER_PHONE_DUPLICATE": "سائق آخر يملك رقم الهاتف نفسه",
+    "ORDER_NOT_FOUND": "الطلب غير موجود",
+    "ORDER_CANCELLED": "هذا الطلب ملغى",
+    "ORDER_HAS_ACTIVITY": "لهذا الطلب إرجاعات أو دفعات",
+    "ORDER_DATE_AFTER_ACTIVITY": "التاريخ بعد إرجاع أو دفعة على هذا الطلب",
+    "CREDIT_LIMIT_EXCEEDED": "هذا يتجاوز حد الائتمان بمقدار {{excess}} دينار.",
+    "UNIT_DEPOSIT_NOT_PERMITTED": "لا يُسمح لك بتغيير التأمين لكل منصة",
+    "RETURN_NOT_FOUND": "الإرجاع غير موجود",
+    "RETURN_EMPTY": "أدخل منصة واحدة على الأقل",
+    "RETURN_LINE_NOT_IN_ORDER": "هذا الصنف ليس في الطلب",
+    "RETURN_DUPLICATE_LINE": "الصنف نفسه مكرر",
+    "RETURN_EXCEEDS_OUT": "هذا الإرجاع يتضمن منصات أكثر مما بقي خارجًا من الطلب.",
+    "DAMAGED_REFUND_TOO_HIGH": "استرداد التالف أعلى من التأمين",
+    "RETURN_ALREADY_REVERSED": "هذا الإرجاع عُكس بالفعل",
+    "RETURN_DATE_BEFORE_ORDER_DATE": "تاريخ الإرجاع قبل الطلب",
+    "PAYMENT_ORDER_NOT_LENT": "هذا الطلب مدفوع نقداً",
+    "PAYMENT_EXCEEDS_OWED": "هذه الدفعة أكبر من المبلغ المستحق المتبقي.",
+    "PAYMENT_DATE_BEFORE_ORDER_DATE": "تاريخ الدفعة قبل الطلب",
+    "LEDGER_ENTRY_NOT_FOUND": "القيد المالي غير موجود",
+    "LEDGER_ENTRY_NOT_REVERSIBLE": "لا يمكن عكس هذا القيد",
+    "LEDGER_ENTRY_ALREADY_REVERSED": "هذا القيد عُكس بالفعل",
+    "LEDGER_ENTRY_NO_RECEIPT": "لا يوجد إيصال لهذا القيد",
+    "IDEMPOTENCY_KEY_REQUIRED": "الطلب ينقصه مفتاح الأمان",
+    "IDEMPOTENCY_KEY_INVALID": "مفتاح أمان الطلب غير صالح",
+    "IDEMPOTENCY_KEY_REUSED": "استُخدم هذا المفتاح لطلب مختلف",
+    "NETWORK_ERROR": "لا يوجد اتصال بالخادم. تحقق من الاتصال وحاول مرة أخرى.",
+    "REQUEST_TIMEOUT": "لم يستجب الخادم في الوقت المحدد. إذا كنت تحفظ تغييراً فربما حُفظ: أعد تحميل الصفحة للتحقق قبل المحاولة مجدداً.",
+    "UNKNOWN_ERROR": "حدث خطأ ما. حاول مرة أخرى.",
+    "ORDER_LINE_HAS_RETURNS": "لهذا السطر مرتجعات في سجله ولا يمكن حذفه؛ خفّض كميته بدلاً من ذلك",
+    "CUSTOMER_RETURN_NOT_FOUND": "إرجاع الزبون غير موجود",
+    "PALLET_SURPLUS_STILL_OUT": "لا تُقبل زيادة إلا بعد إعادة كل منصات هذا النوع",
+    "PALLET_SURPLUS_NOT_RETURNED": "لا تُستلم منصات زائدة إلا من نوع يستلمه هذا الإرجاع",
+    "PALLET_CREDIT_GIVEN_BACK": "سُلّمت المنصات الزائدة لهذا الإرجاع؛ فلا يمكن تصحيحه أو حذفه",
+    "PALLET_CREDIT_INSUFFICIENT": "لا يدين المصنع لهم بهذا العدد",
+    "PALLET_CREDIT_OUTSTANDING": "لا يزال المصنع مديناً لهذا الزبون بمنصات من هذا النوع؛ سلّمها له أولاً",
+    "HAND_BACK_NOT_FOUND": "لم يُعثر على التسليم",
+    "HAND_BACK_UNDO_WHILE_OUT": "لديهم منصات من هذا النوع منذ ذلك الحين: سجّل إرجاعها أولاً ثم ألغِ"
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "receiptHint": "يظهر على كل إيصال مطبوع.",
+    "saved": "تم حفظ الإعدادات",
+    "fields": {
+      "factoryName": "اسم المصنع",
+      "phone": "الهاتف",
+      "address": "العنوان",
+      "logo": "الشعار"
+    },
+    "description": "شاشتك، وبيانات المصنع.",
+    "appearance": {
+      "title": "المظهر",
+      "hint": "كيف يبدو التطبيق على هذا الحاسوب. يُحفظ في هذا المتصفح فقط.",
+      "modeTitle": "فاتح أو داكن",
+      "modeHint": "اختر واحدًا، أو اتبع إعداد الحاسوب.",
+      "modes": {
+        "light": "فاتح",
+        "dark": "داكن",
+        "system": "مثل الحاسوب"
+      },
+      "modeDescriptions": {
+        "light": "أسطح مشرقة للنهار",
+        "dark": "أريح للعين في الليل",
+        "system": "يتغير مع الحاسوب"
+      },
+      "paletteTitle": "لون المظهر",
+      "paletteHint": "يلوّن الشاشة كلها: الأزرار والشريط الجانبي وكل الأسطح.",
+      "palettes": {
+        "harbor": "الميناء",
+        "lagoon": "البحيرة",
+        "forest": "الغابة",
+        "timber": "الخشب",
+        "clay": "الطين",
+        "plum": "البرقوق",
+        "graphite": "الغرافيت"
+      },
+      "paletteDescriptions": {
+        "harbor": "أزرق عميق هادئ",
+        "lagoon": "أزرق مخضر منعش",
+        "forest": "أخضر ثابت",
+        "timber": "بني خشبي دافئ",
+        "clay": "طيني ترابي",
+        "plum": "بنفسجي غني",
+        "graphite": "رماديات هادئة"
+      },
+      "fontTitle": "نوع الخط",
+      "fontHint": "كلها تحمل جميع الحروف الكردية والعربية واللاتينية.",
+      "fonts": {
+        "inter": "إنتر ونوتو",
+        "vazirmatn": "وزيرمتن",
+        "plex": "آي بي إم بلكس",
+        "kufi": "نوتو كوفي",
+        "naskh": "نوتو نسخ"
+      },
+      "fontDescriptions": {
+        "inter": "واضح وحديث",
+        "vazirmatn": "مستدير وودود",
+        "plex": "حاد وتقني",
+        "kufi": "هندسي وجريء",
+        "naskh": "أسلوب الكتب التقليدي"
+      },
+      "sizeTitle": "حجم النص",
+      "sizeHint": "يكبّر كل شيء أو يصغّره: النص والحقول والأزرار.",
+      "sizes": {
+        "sm": "صغير",
+        "md": "عادي",
+        "lg": "كبير",
+        "xl": "كبير جدًا"
+      },
+      "sizeSampleLabel": "حقل نموذجي",
+      "sizeSample": "مصنع منصات أربيل",
+      "languageTitle": "اللغة",
+      "languageHint": "لغة التطبيق كله؛ الكردية والعربية تُقرآن من اليمين إلى اليسار."
+    },
+    "factory": {
+      "title": "بيانات المصنع",
+      "hint": "تظهر على كل إيصال مطبوع. يستطيع المسؤول وحده تغييرها."
+    }
+  },
+  "items": {
+    "list": {
+      "title": "الأصناف",
+      "new": "صنف جديد",
+      "empty": "لا توجد أصناف بعد. أضف أول صنف.",
+      "lowStockOnly": "المخزون المنخفض"
+    },
+    "lowStock": "مخزون منخفض",
+    "new": {
+      "title": "صنف جديد"
+    },
+    "edit": {
+      "title": "تعديل الصنف"
+    },
+    "detail": {
+      "title": "الصنف",
+      "backToList": "العودة إلى الأصناف",
+      "archivedBanner": "هذا الصنف مؤرشف: لا يمكن تعديله أو شراؤه بعد الآن، لكن يمكن تعديل مخزونه.",
+      "archived": "تمت أرشفة الصنف",
+      "archiveTitle": "أرشفة {{name}}؟",
+      "archiveBody": "يبقى الصنف في السجل وفي الطلبات الموجودة، لكن لا يمكن اختياره لطلبات جديدة.",
+      "addBatch": "إضافة شراء",
+      "adjustStock": "تعديل المخزون",
+      "noMinStock": "غير محدد",
+      "tabs": {
+        "movements": "حركات المخزون",
+        "batches": "المشتريات"
+      }
+    },
+    "fields": {
+      "name": "الاسم",
+      "image": "الصورة",
+      "depositPrice": "سعر التأمين",
+      "quantityOnHand": "في المخزن",
+      "quantityOut": "لدى الزبائن",
+      "damagedTotal": "التالف",
+      "minStock": "الحد الأدنى للمخزون",
+      "status": "الحالة"
+    },
+    "form": {
+      "saved": "تم حفظ الصنف",
+      "created": "تمت إضافة الصنف",
+      "depositPriceHelp": "تغيير السعر لا يغيّر الطلبات الموجودة أبداً.",
+      "minStockHelp": "اتركه فارغاً إن لم ترد تنبيه المخزون المنخفض.",
+      "initialStock": "المخزون الأولي",
+      "addInitialStock": "إضافة مخزون أولي",
+      "noInitialStockHelp": "بدون مخزون أولي يبدأ الصنف من 0.",
+      "noInitialStock": "بدون"
+    },
+    "adjust": {
+      "title": "تعديل المخزون",
+      "description": "في المخزن الآن: {{onHand}}",
+      "quantity": "التغيير",
+      "quantityHelp": "الرقم الموجب يضيف منصات، والرقم السالب بعلامة ناقص يُنقصها.",
+      "notZero": "لا يمكن أن يكون التغيير صفراً",
+      "note": "السبب",
+      "submit": "تعديل",
+      "done": "تم تعديل المخزون"
+    },
+    "movements": {
+      "time": "الوقت",
+      "reason": "السبب",
+      "quantity": "الكمية",
+      "reference": "المرجع",
+      "note": "ملاحظة",
+      "user": "بواسطة",
+      "batchReference": "شراء #{{id}}",
+      "empty": "لا توجد حركات مخزون بعد"
+    },
+    "stock": {
+      "insufficient": "المخزون غير كافٍ: المطلوب {{requested}} والمتوفر {{available}}"
+    }
+  },
+  "purchases": {
+    "newTitle": "إضافة شراء",
+    "editTitle": "تصحيح الشراء",
+    "created": "تم تسجيل الشراء",
+    "saved": "تم تصحيح الشراء",
+    "deleted": "تم حذف الشراء",
+    "deleteTitle": "حذف هذا الشراء؟",
+    "deleteBody": "تُسحب منصاته من المخزون، ويبقى الحذف في السجل.",
+    "empty": "لم تُسجَّل مشتريات بعد",
+    "fields": {
+      "date": "التاريخ",
+      "quantity": "الكمية",
+      "unitCost": "تكلفة الوحدة",
+      "totalCost": "التكلفة الإجمالية",
+      "note": "ملاحظة"
+    }
+  },
+  "customers": {
+    "list": {
+      "title": "الزبائن",
+      "new": "زبون جديد",
+      "empty": "لا يوجد زبائن بعد. أضف أول زبون.",
+      "hasOpenOrders": "لديهم طلبات مفتوحة"
+    },
+    "noLimit": "بلا حد",
+    "new": {
+      "title": "زبون جديد"
+    },
+    "edit": {
+      "title": "تعديل الزبون"
+    },
+    "detail": {
+      "title": "الزبون",
+      "backToList": "العودة إلى الزبائن",
+      "archivedBanner": "هذا الزبون مؤرشف ولا يمكنه أخذ طلبات جديدة.",
+      "archived": "تمت أرشفة الزبون",
+      "archiveTitle": "أرشفة {{name}}؟",
+      "archiveBody": "يبقى الزبون في السجل وفي الطلبات السابقة، لكن لا يمكنه أخذ طلبات جديدة. لا يمكن أرشفة زبون لديه طلبات مفتوحة.",
+      "overLimit": "فوق الحد"
+    },
+    "fields": {
+      "name": "الاسم",
+      "phone": "الهاتف",
+      "altPhone": "هاتف ثانٍ",
+      "address": "العنوان",
+      "creditLimit": "حد الائتمان",
+      "palletsOut": "المنصات لديهم",
+      "outValue": "قيمة ما لديهم",
+      "owed": "المستحق",
+      "held": "التأمين المحتجز",
+      "headroom": "الائتمان المتبقي",
+      "status": "الحالة"
+    },
+    "form": {
+      "saved": "تم حفظ الزبون",
+      "created": "تمت إضافة الزبون",
+      "creditLimitHelp": "اتركه فارغاً لعدم وجود حد؛ و0 يعني أن الزبون لا يمكنه أخذ شيء.",
+      "creditLimitAdminOnly": "المسؤول وحده يمكنه تحديد حد الائتمان أو تغييره.",
+      "phoneDuplicateWarning": "هذا الرقم مستخدم من قبل:",
+      "duplicateTitle": "رقم الهاتف هذا مستخدم بالفعل",
+      "duplicateBody": "إنه يخص {{names}}. هل تريد الحفظ على أي حال؟",
+      "saveAnyway": "احفظ على أي حال",
+      "contactSection": "معلومات الاتصال",
+      "contactSectionHint": "من هو الزبون وكيف يمكن التواصل معه",
+      "creditSection": "الدين",
+      "creditSectionHint": "أقصى ما يمكن أن يكون الزبون مديناً به في وقت واحد"
+    },
+    "holdings": {
+      "title": "المنصات لديهم",
+      "item": "الصنف",
+      "quantityOut": "لديهم",
+      "sources": "الطلبات",
+      "empty": "لا توجد منصات لدى الزبون"
+    },
+    "tabs": {
+      "orders": "الطلبات",
+      "payments": "الدفعات",
+      "refunds": "المبالغ المستردة",
+      "money": "المعاملات",
+      "history": "السجل",
+      "label": "الأقسام"
+    },
+    "history": {
+      "empty": "لم يُسجَّل شيء لهذا الزبون بعد",
+      "deleted": "محذوف",
+      "corrected": "مصحّح",
+      "pallets": "الطبليات"
+    },
+    "palletCredits": {
+      "title": "منصات مستحقة لهم",
+      "giveBack": "تسليم",
+      "dialogTitle": "تسليم المنصات",
+      "dialogDescription": "المستحق لهم: {{quantity}} × {{item}}.",
+      "quantity": "الكمية",
+      "done": "سُلّمت المنصات",
+      "overOwed": "{{quantity}} كحد أقصى",
+      "owed": "المستحق",
+      "undo": "إلغاء",
+      "undone": "أُلغي",
+      "undoTitle": "إلغاء هذا التسليم؟",
+      "undoBody": "تصبح {{quantity}} × {{item}} مستحقة للزبون من جديد وتعود إلى المخزون. استخدمه فقط إن سُجّل التسليم خطأً.",
+      "undoDone": "أُلغي التسليم"
+    }
+  },
+  "drivers": {
+    "list": {
+      "title": "السائقون",
+      "new": "سائق جديد",
+      "empty": "لا يوجد سائقون بعد. أضف أول سائق.",
+      "archived": "تمت أرشفة السائق",
+      "archiveTitle": "أرشفة {{name}}؟",
+      "archiveBody": "تبقى الطلبات تُظهر هذا السائق، لكن لا يمكن اختياره لطلبات جديدة."
+    },
+    "detail": {
+      "title": "السائق",
+      "backToList": "العودة إلى السائقين",
+      "archivedBanner": "هذا السائق مؤرشف ولا يمكن اختياره لطلبات جديدة.",
+      "orders": "الطلبات"
+    },
+    "dialog": {
+      "newTitle": "سائق جديد",
+      "editTitle": "تعديل السائق",
+      "created": "تمت إضافة السائق",
+      "saved": "تم حفظ السائق",
+      "phoneDuplicateWarning": "هذا الرقم مستخدم من قبل:",
+      "duplicateTitle": "رقم الهاتف هذا مستخدم بالفعل",
+      "duplicateBody": "إنه يخص {{names}}. هل تريد الحفظ على أي حال؟",
+      "saveAnyway": "احفظ على أي حال",
+      "useExisting": "اختر {{name}}"
+    },
+    "fields": {
+      "name": "الاسم",
+      "phone": "الهاتف",
+      "carNumber": "رقم السيارة",
+      "status": "الحالة"
+    }
+  },
+  "payments": {
+    "automatic": "تلقائي",
+    "fields": {
+      "amount": "المبلغ",
+      "date": "التاريخ",
+      "note": "ملاحظة"
+    },
+    "new": {
+      "title": "تسجيل دفعة",
+      "submit": "تسجيل الدفعة",
+      "created": "سُجّلت دفعة على الطلب #{{orderNumber}}",
+      "full": "المبلغ كاملاً",
+      "half": "النصف",
+      "summary": "الملخص",
+      "owedBefore": "المستحق قبل",
+      "payment": "الدفعة",
+      "owedAfter": "المستحق بعد",
+      "willSettle": "ستتم تسوية هذا الطلب",
+      "nothingOwed": "لا يوجد مستحق على هذا الطلب",
+      "backToOrder": "العودة إلى الطلب"
+    }
+  },
+  "orders": {
+    "list": {
+      "title": "الطلبات",
+      "new": "طلب جديد",
+      "empty": "لا توجد طلبات هنا بعد",
+      "allStatuses": "الكل",
+      "anyCustomer": "الزبون",
+      "anyDriver": "السائق",
+      "anyItem": "الصنف",
+      "anyPaymentType": "كل أنواع الدفع",
+      "status": "الحالة"
+    },
+    "fields": {
+      "orderNumber": "الطلب",
+      "customer": "الزبون",
+      "chooseCustomer": "اختر زبوناً",
+      "driver": "السائق",
+      "chooseDriver": "اختر سائقاً",
+      "newDriver": "سائق جديد",
+      "date": "التاريخ",
+      "paymentType": "الدفع",
+      "notes": "ملاحظات",
+      "depositTotal": "مجموع التأمين",
+      "owed": "المستحق",
+      "held": "التأمين المحتجز",
+      "palletsOut": "المنصات لديهم",
+      "status": "الحالة",
+      "outValue": "قيمة ما لديهم"
+    },
+    "lines": {
+      "title": "المنصات",
+      "item": "الصنف",
+      "chooseItem": "اختر صنفاً",
+      "quantity": "الكمية",
+      "unitDeposit": "تأمين الوحدة",
+      "lineTotal": "مجموع السطر",
+      "returnedAccepted": "المُرجَع",
+      "returnedDamaged": "التالف",
+      "outQuantity": "ما زال لديهم",
+      "add": "إضافة سطر",
+      "remove": "حذف السطر",
+      "enterHint": "مفتاح الإدخال في آخر كمية يضيف سطراً"
+    },
+    "new": {
+      "title": "طلب جديد",
+      "paidCash": "مدفوع نقداً",
+      "lent": "آجل",
+      "submit": "تسليم",
+      "submitWithOverride": "تسليم رغم تجاوز الحد",
+      "created": "تم تسجيل الطلب #{{orderNumber}}",
+      "creditExceeded": "حد الائتمان {{limit}}، والقائم حالياً {{outValue}}: هذا الطلب بقيمة {{newTotal}} يتجاوزه بمقدار {{excess}}.",
+      "overrideTitle": "التسليم رغم تجاوز حد الائتمان؟",
+      "overrideBody": "حد الائتمان {{limit}}، والقائم {{outValue}}، وهذا الطلب {{newTotal}}: بزيادة {{excess}}. يُسجَّل التجاوز في السجل.",
+      "summary": {
+        "title": "الملخص",
+        "paysNow": "يدفع الزبون هذا الآن",
+        "willOwe": "سيبقى هذا ديناً على الزبون",
+        "headroomAfter": "الائتمان المتبقي بعده",
+        "fromCredit": "من المنصات المستحقة لهم، بلا تأمين: {{items}}"
+      },
+      "creditUnavailable": "تعذر التحقق من حد ائتمان الزبون هنا؛ ويبقى يُتحقق منه عند الحفظ."
+    },
+    "detail": {
+      "title": "الطلب",
+      "backToList": "العودة إلى الطلبات",
+      "createdBanner": "تم تسجيل الطلب {{orderNumber}}.",
+      "printReceipt": "طباعة الإيصال",
+      "cancelOrder": "إلغاء الطلب",
+      "cancelled": "تم إلغاء الطلب",
+      "cancelledBanner": "ألغاه {{name}} في",
+      "creditOverridden": "تجاوز حد الائتمان {{name}} في",
+      "returns": "المرتجعات",
+      "noReturns": "لم يُرجَع شيء بعد",
+      "showReversed": "إظهار المعكوسة",
+      "reversed": "معكوس",
+      "replacedBy": "استُبدل بالإرجاع #{{id}}",
+      "returnAccepted": "مقبول",
+      "returnDamaged": "تالف",
+      "damagedRefund": "استرداد التالف",
+      "refundDue": "المبلغ المستحق للإرجاع",
+      "cashRefund": "أُعيد نقداً",
+      "money": "المعاملات",
+      "noMoney": "لا توجد معاملات بعد",
+      "recordReturn": "تسجيل إرجاع",
+      "recordPayment": "تسجيل دفعة",
+      "editReturn": "تعديل الإرجاع",
+      "deleteReturn": "حذف الإرجاع",
+      "deleteReturnTitle": "حذف هذا الإرجاع؟",
+      "deleteReturnBody": "تعود طبلياته المقبولة إلى الزبون ويُعكس أي استرداد نقدي. يبقى الإرجاع في السجل موسوماً بأنه محذوف.",
+      "returnDeleted": "حُذف الإرجاع",
+      "deletePayment": "حذف الدفعة",
+      "deletePaymentTitle": "حذف هذه الدفعة؟",
+      "deletePaymentBody": "يعود مبلغها مستحقاً. تبقى الدفعة في السجل مع عكسها.",
+      "deletePaymentNote": "السبب (اختياري)",
+      "paymentDeleted": "حُذفت الدفعة",
+      "hideReversed": "إخفاء المعكوسة",
+      "fromCreditTitle": "من المنصات المستحقة لهم",
+      "fromCreditNote": "سُلّمت هذه بلا تأمين، من المنصات التي كانت مستحقة لهم."
+    },
+    "money": {
+      "date": "التاريخ",
+      "type": "النوع",
+      "source": "المصدر",
+      "amount": "المبلغ",
+      "note": "ملاحظة",
+      "createdBy": "بواسطة",
+      "reverses": "يعكس #{{id}}",
+      "printReceipt": "طباعة الإيصال المالي",
+      "printAll": "طباعة الكل",
+      "printCombined": "طباعة الإيصال المجمّع للإرجاع"
+    },
+    "cancel": {
+      "confirmTitle": "إلغاء الطلب {{orderNumber}}؟",
+      "confirmBody": "تعود منصاته إلى المخزون ويُعكس الدفع النقدي. يحتفظ الطلب برقمه."
+    },
+    "edit": {
+      "title": "تعديل الطلب",
+      "saved": "تم حفظ الطلب",
+      "immutableHint": "لتغيير الزبون أو نوع الدفع، ألغِ هذا الطلب وأنشئ طلباً جديداً.",
+      "linesLocked": "سُجّلت مرتجعات أو دفعات على هذا الطلب، لذا لا يمكن تغيير أسطره.",
+      "cashReissueNotice": "ستُعاد إصدار الدفعة التلقائية بالمجموع الجديد.",
+      "summary": {
+        "title": "الملخص",
+        "newTotal": "مجموع التأمين الجديد",
+        "delta": "التغيير"
+      },
+      "creditExceeded": "حد الائتمان {{limit}}، والقائم حالياً {{outValue}}: زيادة هذا الطلب بمقدار {{newTotal}} تتجاوزه بمقدار {{excess}}.",
+      "overrideBody": "حد الائتمان {{limit}}، والقائم {{outValue}}، وهذه الزيادة {{newTotal}}: بزيادة {{excess}}. يُسجَّل التجاوز في السجل."
+    },
+    "picker": {
+      "title": "اختر الطلب",
+      "empty": "لا يوجد لهذا الزبون طلب يمكن اختياره هنا",
+      "change": "تغيير الطلب",
+      "more": "عرض الطلبات الأقدم"
+    }
+  },
+  "receipt": {
+    "pageTitle": "إيصال التسليم",
+    "title": "إيصال تسليم المنصات",
+    "receiptNumber": "رقم الإيصال",
+    "date": "التاريخ",
+    "factoryPhone": "الهاتف",
+    "factoryAddress": "العنوان",
+    "customer": "الزبون",
+    "driver": "السائق",
+    "name": "الاسم",
+    "phone": "رقم الهاتف",
+    "address": "العنوان",
+    "carNumber": "رقم السيارة",
+    "item": "نوع المنصة",
+    "quantity": "الكمية",
+    "unitDeposit": "التأمين لكل منصة",
+    "lineTotal": "المجموع",
+    "returnedAccepted": "مقبولة",
+    "returnedDamaged": "تالفة",
+    "outQuantity": "لدى الزبون",
+    "printedOn": "تاريخ الطباعة",
+    "depositTotal": "إجمالي التأمين",
+    "olderHeading": "الطبليات لدى الزبون",
+    "olderEarlier": "السابقة",
+    "olderThisOrder": "هذا الطلب",
+    "olderAll": "الكل",
+    "olderUnitDeposit": "التأمين",
+    "olderEarlierValue": "مجموع السابقة",
+    "olderAllValue": "مجموع الكل",
+    "orderTotal": "تأمين هذا الطلب",
+    "olderOutValue": "تأمين الطبليات السابقة لدى الزبون",
+    "allOutValue": "تأمين كل الطبليات لدى الزبون",
+    "combinedTotal": "المجموع",
+    "paymentType": "نوع الدفع",
+    "paymentCash": "مدفوع نقداً",
+    "paymentLent": "آجل (غير مدفوع)",
+    "currency": "دينار",
+    "continued": "يُتبع في الصفحة التالية",
+    "sheetOf": "الصفحة {{x}} من {{y}}",
+    "cancelledError": "هذا الطلب ملغى؛ لا يمكن طباعة إيصاله",
+    "print": "طباعة",
+    "money": {
+      "pageTitle": "إيصال مالي",
+      "paymentTitle": "إيصال قبض",
+      "refundTitle": "إيصال صرف",
+      "receiptNumber": "رقم الإيصال المالي",
+      "order": "الطلب",
+      "orderNumber": "رقم الطلب",
+      "orderDate": "تاريخ الطلب",
+      "owedBefore": "المستحق قبل",
+      "credit": "قيمة الطبليات المرتجعة",
+      "received": "المبلغ المقبوض",
+      "refunded": "المبلغ المدفوع للزبون",
+      "owedAfter": "المستحق بعد",
+      "note": "ملاحظة",
+      "atHandover": "عند التسليم، نقداً",
+      "recordedBy": "سجّله",
+      "reversed": "أُلغي في {{date}}",
+      "customerReceiptNumber": "رقم إيصال الإرجاع",
+      "returnNumber": "رقم الإرجاع",
+      "partlyReversed": "أُلغي جزء منه في {{date}}"
+    },
+    "transactions": {
+      "pageTitle": "كشف المعاملات",
+      "title": "كشف المعاملات المالية",
+      "receiptNumber": "رقم الإيصال",
+      "type": "النوع",
+      "amount": "المبلغ",
+      "status": "الحالة",
+      "received": "مجموع المقبوض",
+      "refunded": "مجموع المردود",
+      "owed": "المستحق الآن"
+    },
+    "preparing": "جارٍ تجهيز الإيصال…",
+    "extra": "زيادة",
+    "fromCredit": "من المستحق لهم",
+    "handBack": {
+      "title": "إيصال تسليم المنصات",
+      "number": "رقم التسليم",
+      "owedBefore": "المستحق قبل",
+      "givenBack": "سُلّم",
+      "owedAfter": "المستحق بعد",
+      "undone": "أُلغي {{date}}"
+    },
+    "withHeading": "طبليات طلبات أخرى أُعيدت مع هذا الطلب",
+    "owedHeading": "رصيد طبليات الزبون",
+    "settleCredited": "المخصوم بالإرجاع",
+    "settleKept": "تعويض التلف",
+    "settlePaid": "المدفوع",
+    "settleOwed": "المستحق الآن"
+  },
+  "returns": {
+    "list": {
+      "title": "المرتجعات",
+      "empty": "لا توجد مرتجعات هنا بعد",
+      "number": "رقم الإرجاع"
+    },
+    "fields": {
+      "accepted": "مقبولة",
+      "damaged": "تالفة",
+      "damagedRefund": "استرداد التالف",
+      "date": "التاريخ",
+      "notes": "ملاحظات"
+    },
+    "new": {
+      "title": "تسجيل إرجاع",
+      "titleReplace": "تصحيح إرجاع",
+      "submit": "تسجيل الإرجاع",
+      "submitReplace": "حفظ الإرجاع المصحح",
+      "lines": "الطبليات المرتجعة",
+      "allAccepted": "كلها مقبولة",
+      "everythingAccepted": "كل المرتجع مقبول",
+      "out": "لدى الزبون",
+      "summary": "الملخص",
+      "refundDue": "الرصيد المستحق",
+      "cashRefund": "استرداد نقدي",
+      "owedBefore": "المستحق قبل",
+      "owedAfter": "المستحق بعد",
+      "outAfter": "يبقى لدى الزبون",
+      "compensation": "التعويض المقدّر",
+      "cashHandover": "سلّم الزبون {{amount}} دينار الآن",
+      "stillOwes": "ما زال على الزبون {{amount}}",
+      "notReplaceable": "لم يعد بالإمكان تصحيح هذا الإرجاع",
+      "backToOrder": "العودة إلى الطلب",
+      "nothingOut": "لا شيء لدى الزبون من هذا الطلب",
+      "damageSplit": "تأمينها {{deposit}}: يُردّ منه {{refund}} ويُحتجز {{kept}} تعويضاً عن التلف."
+    },
+    "edit": {
+      "title": "تعديل الإرجاع",
+      "backToList": "العودة إلى المرتجعات",
+      "cashMore": "سبق إرجاع {{paid}} دينار — سلّم الزبون {{amount}} دينار إضافية الآن",
+      "cashBack": "سبق إرجاع {{paid}} دينار — استرجع {{amount}} دينار من الزبون",
+      "savedTitle": "تم حفظ الإرجاع",
+      "alreadyChanged": "تم تغيير هذا الإرجاع بالفعل — تعرضه القائمة كما هو الآن",
+      "cannotDrop": "لا يحق لك حذف الإرجاعات: يجب أن يستلم {{orders}} بعض المنصات"
+    },
+    "customer": {
+      "heading": "الطبليات لدى الزبون: {{pallets}} · الطلبات: {{orders}}",
+      "everythingBack": "عاد كل شيء",
+      "opensInNewTab": "(يُفتح في علامة تبويب جديدة)",
+      "less": "واحدة أقل",
+      "more": "واحدة أكثر",
+      "all": "الكل",
+      "palletsBack": "الطبليات العائدة",
+      "byOrder": "حسب الطلب",
+      "orderBack": "عاد {{pallets}}",
+      "ordersChanged": "تغيّرت طلبات هذا الزبون في الأثناء؛ أُعيد تحميل القائمة",
+      "nothingOut": "لا توجد طبليات لدى هذا الزبون",
+      "savedTitle": "سُجّل الإرجاع",
+      "savedLine": "{{accepted}} مقبولة · {{damaged}} تالفة",
+      "goneTitle": "هذه الأعداد لطبليات لم تعد لدى الزبون — أُرجعت أو أُلغيت في الأثناء — ولن تُحفظ:",
+      "goneDismiss": "أزِلها",
+      "tooManyOrders": "يصل هذا الإرجاع إلى {{orders}} طلباً؛ يأخذ الحفظ الواحد {{max}} على الأكثر. سجّل طبليات أقل الآن، الأقدم أولاً، والباقي في إرجاع ثانٍ.",
+      "recheckTitle": "تغيّرت طلبات هذه الأصناف في الأثناء، فأُعيد توزيع أعدادها كما يلي. راجع أين يذهب كل منها ثم احفظ:",
+      "recheckDone": "راجعتُ",
+      "outByDate": "{{out}} حتى {{date}}",
+      "orderOwes": "عليه {{amount}} دينار",
+      "fromOrders": "هذه الطبليات من الطلبات",
+      "extraWarning": "{{extra}} أكثر من الـ {{out}} التي لديهم — سيصبح المصنع مديناً لهم بـ {{extra}}",
+      "extraTotal": "سيصبح المصنع مديناً لهم بـ {{extra}} منصة",
+      "savedExtra": "مستحق للزبون من الآن: {{items}}"
+    },
+    "withOrder": {
+      "banner": "إرجاع مع الطلب {{orderNumber}}: كل الطبليات لدى الزبون هنا، الطلب الأقدم أولاً.",
+      "tag": "مع الطلب {{orderNumber}}",
+      "onThisOrder": "على الطلب {{orderNumber}}",
+      "otherOrders": "الطلبات الأخرى",
+      "onThisOrderCount": "{{quantity}} على هذا الطلب",
+      "nothingOnThisOrder": "لم يبقَ شيء من هذا الطلب لدى الزبون.",
+      "oldestFirst": "تُحتسب الأعداد على الطلب الأقدم أولاً، وهذا الطلب في دوره."
+    }
+  },
+  "reports": {
+    "tabs": "التقارير",
+    "print": "طباعة",
+    "total": "الإجمالي",
+    "empty": "لا شيء لعرضه بهذه التصفية",
+    "truncated": "تُعرض أول 5,000 صف فقط. ضيّق نطاق التاريخ لرؤية الباقي.",
+    "truncatedRows": "تُعرض أول 5,000 صف فقط؛ الإجمالي يشمل كل الصفوف. ضيّق عوامل التصفية لرؤية الباقي.",
+    "generatedAt": "أُنشئ {{at}}",
+    "printedFilters": "عوامل التصفية: {{filters}}",
+    "period": "من {{from}} إلى {{to}}",
+    "allCustomers": "كل الزبائن",
+    "allItems": "كل الأصناف",
+    "allDrivers": "كل السائقين",
+    "positions": {
+      "title": "الطبليات لدى الزبائن والأموال",
+      "customer": "الزبون",
+      "palletsOut": "الطبليات لدى الزبون",
+      "outValue": "قيمة الطبليات",
+      "owed": "المستحق",
+      "held": "المحتجز",
+      "perItem": "الطبليات حسب الصنف لـ {{name}}",
+      "totalPerItem": "الطبليات لدى الزبائن حسب الصنف"
+    },
+    "purchases": {
+      "title": "المشتريات",
+      "date": "التاريخ",
+      "item": "الصنف",
+      "quantity": "الكمية",
+      "unitCost": "تكلفة الوحدة",
+      "totalCost": "التكلفة الإجمالية",
+      "note": "ملاحظة",
+      "subtotal": "المجموع الفرعي: {{name}}"
+    },
+    "activity": {
+      "title": "النشاط",
+      "date": "التاريخ",
+      "order": "الطلب",
+      "customer": "الزبون",
+      "driver": "السائق",
+      "item": "الصنف",
+      "pallets": "الطبليات",
+      "quantity": "الكمية",
+      "deposit": "التأمين",
+      "handovers": "التسليمات",
+      "returns": "الإرجاعات",
+      "accepted": "مقبولة",
+      "damaged": "تالفة",
+      "refundDue": "الرصيد المستحق",
+      "payments": "الدفعات",
+      "refunds": "الاستردادات",
+      "type": "النوع",
+      "amount": "المبلغ",
+      "reversal": "عكس",
+      "grossReversals": "{{gross}} ناقص {{reversals}} معكوس",
+      "moneyOmitted": "تُسجَّل الدفعات والاستردادات لكل طلب لا لكل صنف، لذا تُحذف عند اختيار صنف.",
+      "compensationAssessed": "تعويض التلف المقدَّر",
+      "compensationNote": "يُقدَّر على الطبليات التالفة. في الطلبات الآجلة قد يبقى جزءاً مما على الزبون.",
+      "damagedRefund": "استرداد التالف",
+      "compensation": "التعويض",
+      "pagedNote": "يعرض كل جدول صفحة واحدة من صفوفه؛ الإجماليات تشمل الفترة كلها. الطباعة تطبع الصفحات المعروضة.",
+      "rowsShown": "الصفوف {{from}}–{{to}} من {{total}}"
+    },
+    "stock": {
+      "title": "مستويات المخزون",
+      "item": "الصنف",
+      "onHand": "في المخزن",
+      "out": "لدى الزبائن",
+      "damaged": "تالفة",
+      "minStock": "الحد الأدنى",
+      "lowStockOnly": "المنخفض فقط",
+      "lowStockCount": "منخفض: {{value}}"
+    }
+  }
+}
