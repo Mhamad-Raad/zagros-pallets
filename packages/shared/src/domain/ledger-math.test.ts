@@ -1,0 +1,355 @@
+import { describe, expect, it } from 'vitest';
+import {
+  checkCreditLimit,
+  chunkReceiptLines,
+  layoutReceiptRows,
+  LedgerInvariantError,
+  computeOrderTotals,
+  orderStateWithoutReturn,
+  returnMoney,
+  returnRefundDue,
+  type LedgerEntryState,
+  type OrderState,
+  type ReturnState,
+} from './ledger-math.js';
+import type { PaymentType } from '../enums.js';
+
+/**
+ * Minimal in-memory simulator of the order/return/payment operations, used to replay the
+ * worked examples of ARCHITECTURE.md section 4 against the pure formulas.
+ */
+interface SimReturn extends ReturnState {
+  cashRefund: number;
+  refundEntryIndex: number | null;
+}
+
+class SimOrder {
+  readonly state: {
+    cancelled: boolean;
+    lines: { id: number; quantity: number; unitDeposit: number }[];
+    returns: SimReturn[];
+    ledger: LedgerEntryState[];
+  };
+
+  constructor(
+    readonly paymentType: PaymentType,
+    lines: [quantity: number, unitDeposit: number][],
+  ) {
+    this.state = {
+      cancelled: false,
+      lines: lines.map(([quantity, unitDeposit], i) => ({ id: i + 1, quantity, unitDeposit })),
+      returns: [],
+      ledger: [],
+    };
+    const depositTotal = this.totals().depositTotal;
+    if (paymentType === 'CASH' && depositTotal > 0) this.state.ledger.push({ type: 'PAYMENT', amount: depositTotal });
+  }
+
+  totals() {
+    return computeOrderTotals(this.state as OrderState);
+  }
+
+  pay(amount: number) {
+    expect(this.paymentType).toBe('LENT');
+    expect(amount).toBeLessThanOrEqual(this.totals().owed);
+    this.state.ledger.push({ type: 'PAYMENT', amount });
+  }
+
+  /** entries: [lineId, accepted, damaged, damagedRefund] */
+  recordReturn(entries: [number, number, number, number][]) {
+    const lines = entries.map(([orderLineId, acceptedQuantity, damagedQuantity, damagedRefund]) => ({
+      orderLineId,
+      acceptedQuantity,
+      damagedQuantity,
+      damagedRefund,
+    }));
+    const refundDue = returnRefundDue(
+      lines.map((l) => ({ ...l, unitDeposit: this.state.lines.find((ol) => ol.id === l.orderLineId)!.unitDeposit })),
+    );
+    const owedBefore = this.totals().owed;
+    const { cashRefund, owedAfter } = returnMoney(owedBefore, refundDue);
+    let refundEntryIndex: number | null = null;
+    if (cashRefund > 0) {
+      refundEntryIndex = this.state.ledger.push({ type: 'REFUND', amount: cashRefund }) - 1;
+    }
+    this.state.returns.push({ reversed: false, lines, cashRefund, refundEntryIndex });
+    return { refundDue, owedBefore, cashRefund, owedAfter, index: this.state.returns.length - 1 };
+  }
+
+  deleteReturn(index: number) {
+    const ret = this.state.returns[index]!;
+    ret.reversed = true;
+    if (ret.cashRefund > 0) this.state.ledger.push({ type: 'REFUND_REVERSAL', amount: ret.cashRefund });
+  }
+
+  /**
+   * CASH line edit: reverse the automatic payment and record a new one (skipping zero amounts).
+   * Like the API, ledger rows are written first and totals are recomputed once at the end
+   * (the intermediate state with new lines but old payments is never evaluated).
+   */
+  editLines(lines: [quantity: number, unitDeposit: number][]) {
+    const oldTotal = this.totals().depositTotal;
+    const newTotal = lines.reduce((acc, [quantity, unitDeposit]) => acc + quantity * unitDeposit, 0);
+    this.state.lines = lines.map(([quantity, unitDeposit], i) => ({ id: i + 1, quantity, unitDeposit }));
+    if (this.paymentType === 'CASH') {
+      if (oldTotal > 0) this.state.ledger.push({ type: 'PAYMENT_REVERSAL', amount: oldTotal });
+      if (newTotal > 0) this.state.ledger.push({ type: 'PAYMENT', amount: newTotal });
+    }
+    return newTotal - oldTotal;
+  }
+
+  cancel() {
+    const auto = this.state.ledger.find((e) => e.type === 'PAYMENT');
+    if (this.paymentType === 'CASH' && auto) this.state.ledger.push({ type: 'PAYMENT_REVERSAL', amount: auto.amount });
+    this.state.cancelled = true;
+  }
+}
+
+describe('section 4.3 worked examples', () => {
+  it('1. CASH 100×1,000, return 100 accepted → full cash refund, SETTLED', () => {
+    const o = new SimOrder('CASH', [[100, 1000]]);
+    const r = o.recordReturn([[1, 100, 0, 0]]);
+    expect(r).toMatchObject({ refundDue: 100_000, owedBefore: 0, cashRefund: 100_000, owedAfter: 0 });
+    expect(o.totals()).toMatchObject({ owed: 0, outValue: 0, held: 0, status: 'SETTLED' });
+  });
+
+  it('2. CASH 100×1,000, return 90 accepted + 10 damaged (refund 0) → compensation 10,000', () => {
+    const o = new SimOrder('CASH', [[100, 1000]]);
+    const r = o.recordReturn([[1, 90, 10, 0]]);
+    expect(r).toMatchObject({ refundDue: 90_000, cashRefund: 90_000, owedAfter: 0 });
+    expect(o.totals()).toMatchObject({ owed: 0, compensation: 10_000, status: 'SETTLED' });
+  });
+
+  it('3. LENT 100×1,000, return 90 accepted + 10 damaged → still owes 10,000', () => {
+    const o = new SimOrder('LENT', [[100, 1000]]);
+    const r = o.recordReturn([[1, 90, 10, 0]]);
+    expect(r).toMatchObject({ refundDue: 90_000, owedBefore: 100_000, cashRefund: 0, owedAfter: 10_000 });
+    expect(o.totals()).toMatchObject({ owed: 10_000, outValue: 0, held: 0, compensation: 10_000, status: 'OPEN' });
+  });
+
+  it('4. LENT 100×1,000, return 0 accepted + 50 damaged → owes 100,000', () => {
+    const o = new SimOrder('LENT', [[100, 1000]]);
+    const r = o.recordReturn([[1, 0, 50, 0]]);
+    expect(r).toMatchObject({ refundDue: 0, cashRefund: 0, owedAfter: 100_000 });
+    expect(o.totals()).toMatchObject({ owed: 100_000, outValue: 50_000, held: 0, status: 'OPEN' });
+  });
+
+  it('5+6. LENT 100×1,000, pay 40,000, return 50 then the remaining 50', () => {
+    const o = new SimOrder('LENT', [[100, 1000]]);
+    o.pay(40_000);
+    const r1 = o.recordReturn([[1, 50, 0, 0]]);
+    expect(r1).toMatchObject({ refundDue: 50_000, owedBefore: 60_000, cashRefund: 0, owedAfter: 10_000 });
+    expect(o.totals()).toMatchObject({ owed: 10_000, outValue: 50_000, held: 40_000, status: 'OPEN' });
+
+    const r2 = o.recordReturn([[1, 50, 0, 0]]);
+    expect(r2).toMatchObject({ refundDue: 50_000, owedBefore: 10_000, cashRefund: 40_000, owedAfter: 0 });
+    expect(o.totals()).toMatchObject({ owed: 0, outValue: 0, held: 0, status: 'SETTLED' });
+  });
+
+  it('7. CASH 100×1,000 line edited to 60×1,000 → automatic payment re-issued', () => {
+    const o = new SimOrder('CASH', [[100, 1000]]);
+    const delta = o.editLines([[60, 1000]]);
+    expect(delta).toBe(-40_000); // stock +40 via ORDER_LINE_EDIT
+    expect(o.state.ledger).toEqual([
+      { type: 'PAYMENT', amount: 100_000 },
+      { type: 'PAYMENT_REVERSAL', amount: 100_000 },
+      { type: 'PAYMENT', amount: 60_000 },
+    ]);
+    expect(o.totals()).toMatchObject({ depositTotal: 60_000, paymentsNet: 60_000, owed: 0 });
+  });
+
+  it('8. CASH 100×1,000, return 50 accepted then deleted → REFUND_REVERSAL, OPEN', () => {
+    const o = new SimOrder('CASH', [[100, 1000]]);
+    const r = o.recordReturn([[1, 50, 0, 0]]);
+    expect(r.cashRefund).toBe(50_000);
+    o.deleteReturn(r.index);
+    expect(o.state.ledger.at(-1)).toEqual({ type: 'REFUND_REVERSAL', amount: 50_000 });
+    expect(o.totals()).toMatchObject({ owed: 0, outValue: 100_000, held: 100_000, status: 'OPEN' });
+  });
+
+  it('9. cancelled order → every derived value is zero', () => {
+    const o = new SimOrder('CASH', [[100, 1000]]);
+    o.cancel();
+    expect(o.totals()).toMatchObject({ outValue: 0, owed: 0, held: 0, compensation: 0, status: 'CANCELLED' });
+    expect(o.totals().lines[0]!.outQuantity).toBe(0);
+  });
+});
+
+describe('ordering rule: deleting an earlier return never recomputes a later cash refund', () => {
+  it('CASH 100×1,000: returns of 50 and 50, then delete the first', () => {
+    const o = new SimOrder('CASH', [[100, 1000]]);
+    const a = o.recordReturn([[1, 50, 0, 0]]);
+    const b = o.recordReturn([[1, 50, 0, 0]]);
+    expect([a.cashRefund, b.cashRefund]).toEqual([50_000, 50_000]);
+    o.deleteReturn(a.index);
+    expect(o.totals()).toMatchObject({ owed: 0, outValue: 50_000, held: 50_000, status: 'OPEN' });
+  });
+
+  it('return edit = delete + re-apply against the current state', () => {
+    const o = new SimOrder('LENT', [[100, 1000]]);
+    const first = o.recordReturn([[1, 60, 0, 0]]); // owes 40,000
+    expect(first.owedAfter).toBe(40_000);
+    o.deleteReturn(first.index); // owes 100,000 again
+    const replacement = o.recordReturn([[1, 50, 5, 2_000]]);
+    expect(replacement).toMatchObject({ refundDue: 52_000, owedBefore: 100_000, cashRefund: 0, owedAfter: 48_000 });
+    expect(o.totals()).toMatchObject({ owed: 48_000, outValue: 45_000, held: 0, compensation: 3_000 });
+  });
+});
+
+describe('ledger invariants: corrupt stored data is refused, never priced', () => {
+  const base = (overrides: Partial<OrderState> = {}): OrderState => ({
+    cancelled: false,
+    lines: [{ id: 1, quantity: 10, unitDeposit: 1_000 }],
+    returns: [],
+    ledger: [],
+    ...overrides,
+  });
+  const returned = (orderLineId: number, acceptedQuantity: number, damagedQuantity = 0): ReturnState => ({
+    reversed: false,
+    lines: [{ orderLineId, acceptedQuantity, damagedQuantity, damagedRefund: 0 }],
+  });
+
+  it('refuses more pallets returned than went out', () => {
+    expect(() => computeOrderTotals(base({ returns: [returned(1, 8, 3)] }))).toThrow(LedgerInvariantError);
+  });
+
+  it('refuses a return line of a line the order does not have', () => {
+    expect(() => computeOrderTotals(base({ returns: [returned(2, 1)] }))).toThrow(/unknown order line 2/);
+  });
+
+  it('refuses refunds that leave a negative amount owed', () => {
+    expect(() => computeOrderTotals(base({ ledger: [{ type: 'REFUND', amount: -20_000 }] }))).toThrow(/owed < 0/);
+  });
+
+  it('refuses totals past the safe integer range', () => {
+    const huge = base({ lines: [{ id: 1, quantity: 2, unitDeposit: Number.MAX_SAFE_INTEGER }] });
+    expect(() => computeOrderTotals(huge)).toThrow(/not a safe integer/);
+  });
+});
+
+describe('orderStateWithoutReturn (§4.8.5)', () => {
+  it('U2: sets the return aside and reverses the refund it paid, so the replacement is priced without it', () => {
+    const o = new SimOrder('CASH', [[100, 1_000]]);
+    const a = o.recordReturn([[1, 50, 0, 0]]); // REFUND 50,000
+    const without = orderStateWithoutReturn(o.state as OrderState, a.index, a.cashRefund);
+    expect(computeOrderTotals(without)).toMatchObject({ owed: 0, outQuantityTotal: 100, refundsNet: 0 });
+    // Priced against that state, a 40-pallet replacement refunds 40,000 in cash (U2).
+    expect(returnMoney(computeOrderTotals(without).owed, 40_000)).toEqual({ cashRefund: 40_000, owedAfter: 0 });
+  });
+
+  it('adds no reversal when the return paid nothing out', () => {
+    const o = new SimOrder('LENT', [[100, 1_000]]);
+    const a = o.recordReturn([[1, 30, 0, 0]]);
+    o.recordReturn([[1, 20, 0, 0]]);
+    const without = orderStateWithoutReturn(o.state as OrderState, a.index, 0);
+    expect(without.ledger).toEqual(o.state.ledger);
+    // The other return stands.
+    expect(computeOrderTotals(without)).toMatchObject({ owed: 80_000, outQuantityTotal: 80 });
+  });
+});
+
+describe('credit limit (4.4)', () => {
+  it('allows when there is no limit or the delta is not positive', () => {
+    expect(checkCreditLimit({ creditLimit: null, customerOutValue: 9e9, depositDelta: 1 }).allowed).toBe(true);
+    expect(checkCreditLimit({ creditLimit: 0, customerOutValue: 0, depositDelta: 0 }).allowed).toBe(true);
+    expect(checkCreditLimit({ creditLimit: 0, customerOutValue: 50_000, depositDelta: -10_000 }).allowed).toBe(true);
+  });
+
+  it('blocks with the excess when the limit would be exceeded', () => {
+    expect(checkCreditLimit({ creditLimit: 500_000, customerOutValue: 450_000, depositDelta: 100_000 })).toEqual({
+      allowed: false,
+      excess: 50_000,
+    });
+    expect(checkCreditLimit({ creditLimit: 500_000, customerOutValue: 400_000, depositDelta: 100_000 }).allowed).toBe(
+      true,
+    );
+  });
+});
+
+describe('U4: checkCreditLimit, the cases of §14.2', () => {
+  it.each([
+    ['no limit', { creditLimit: null, customerOutValue: 0, depositDelta: 5_000_000 }, { allowed: true, excess: 0 }],
+    ['limit 0, nothing taken', { creditLimit: 0, customerOutValue: 0, depositDelta: 0 }, { allowed: true, excess: 0 }],
+    [
+      'limit 0, 1,000 taken',
+      { creditLimit: 0, customerOutValue: 0, depositDelta: 1_000 },
+      { allowed: false, excess: 1_000 },
+    ],
+    [
+      'over by 10,000',
+      { creditLimit: 150_000, customerOutValue: 100_000, depositDelta: 60_000 },
+      { allowed: false, excess: 10_000 },
+    ],
+    [
+      'exactly at the limit',
+      { creditLimit: 150_000, customerOutValue: 100_000, depositDelta: 50_000 },
+      { allowed: true, excess: 0 },
+    ],
+    [
+      'already over, reducing',
+      { creditLimit: 150_000, customerOutValue: 200_000, depositDelta: -20_000 },
+      { allowed: true, excess: 0 },
+    ],
+  ])('%s', (_name, input, expected) => {
+    expect(checkCreditLimit(input)).toMatchObject(expected.allowed ? { allowed: true } : expected);
+  });
+});
+
+describe('receipt chunking (A15)', () => {
+  it('splits into chunks of 6 and keeps one sheet for an empty order', () => {
+    expect(chunkReceiptLines([])).toEqual([[]]);
+    expect(chunkReceiptLines([1, 2, 3, 4, 5, 6]).length).toBe(1);
+    expect(chunkReceiptLines([1, 2, 3, 4, 5, 6, 7]).map((c) => c.length)).toEqual([6, 1]);
+    // U5 (§14.2): full sheets stay whole, one line more starts a new sheet.
+    expect(chunkReceiptLines(Array.from({ length: 12 }, (_, i) => i)).map((c) => c.length)).toEqual([6, 6]);
+    expect(chunkReceiptLines(Array.from({ length: 13 }, (_, i) => i)).map((c) => c.length)).toEqual([6, 6, 1]);
+  });
+});
+
+describe('receipt layout (A15, Q150)', () => {
+  const rows = (count: number) => Array.from({ length: count }, (_, i) => i);
+
+  it('keeps up to six rows in halves, two copies to a sheet', () => {
+    expect(layoutReceiptRows([])).toEqual({ layout: 'halves', rowsPerCopy: 6, chunks: [[]] });
+    expect(layoutReceiptRows(rows(6))).toEqual({ layout: 'halves', rowsPerCopy: 6, chunks: [rows(6)] });
+  });
+
+  it('gives each copy a page from the seventh row, 27 rows to a page', () => {
+    expect(layoutReceiptRows(rows(7))).toMatchObject({ layout: 'pages', rowsPerCopy: 27, chunks: [rows(7)] });
+    expect(layoutReceiptRows(rows(27)).chunks.map((c) => c.length)).toEqual([27]);
+    expect(layoutReceiptRows(rows(28)).chunks.map((c) => c.length)).toEqual([27, 1]);
+    expect(layoutReceiptRows(rows(60)).chunks.map((c) => c.length)).toEqual([27, 27, 6]);
+  });
+
+  it('never ends a page on a heading row: it goes over with the rows it heads', () => {
+    const withHeading = [...rows(26), 'heading', 'older'];
+    const { chunks } = layoutReceiptRows<number | string>(withHeading, (row) => row === 'heading');
+    expect(chunks.map((c) => c.length)).toEqual([26, 2]);
+    expect(chunks[1]).toEqual(['heading', 'older']);
+  });
+
+  it('prints a heading that names its own columns again at the top of a page its rows go on to (Q178)', () => {
+    const isHeading = (row: number | string) => typeof row === 'string' && row.endsWith('heading');
+    // 20 lines, a green heading and 2 rows, the amber heading and 40 rows: 64 rows, 66 with the two repeated.
+    const all = [...rows(20), 'green heading', 'g1', 'g2', 'amber heading', ...rows(40).map((i) => `a${i}`)];
+    const { chunks } = layoutReceiptRows<number | string>(all, isHeading, (heading) => heading === 'amber heading');
+    expect(chunks.map((c) => c.length)).toEqual([27, 27, 12]);
+    // The first page holds the amber heading and 3 of its rows; each page after starts with it again, which takes a
+    // row: 26 rows, then the last 11.
+    expect(chunks[0]?.slice(-4)).toEqual(['amber heading', 'a0', 'a1', 'a2']);
+    expect(chunks[1]?.slice(0, 2)).toEqual(['amber heading', 'a3']);
+    expect(chunks[2]).toEqual(['amber heading', ...rows(11).map((i) => `a${i + 29}`)]);
+    // A heading that does not name its own columns is not repeated.
+    const green = [...rows(26), 'green heading', ...rows(5).map((i) => `g${i}`)];
+    const { chunks: greenChunks } = layoutReceiptRows<number | string>(green, isHeading, (h) => h === 'amber heading');
+    expect(greenChunks).toEqual([rows(26), ['green heading', 'g0', 'g1', 'g2', 'g3', 'g4']]);
+    const greenOver = [...rows(20), 'green heading', ...rows(10).map((i) => `g${i}`)];
+    // A heading that would end a page goes over to the next and starts it: the heading before it is not repeated
+    // above it, even one that repeats.
+    const atEnd = [...rows(20), 'green heading', ...rows(5).map((i) => `g${i}`), 'amber heading', 'a0', 'a1'];
+    const { chunks: atEndChunks } = layoutReceiptRows<number | string>(atEnd, isHeading, () => true);
+    expect(atEndChunks[1]).toEqual(['amber heading', 'a0', 'a1']);
+    // Nor any, unless asked.
+    expect(layoutReceiptRows<number | string>(greenOver, isHeading).chunks[1]?.[0]).toBe('g6');
+  });
+});

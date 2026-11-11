@@ -1,0 +1,155 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { LoginBody, SESSION_IDLE_MINUTES } from '@pallet/shared';
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { z } from 'zod';
+import { Field, FieldError, FieldLabel } from '@/components/app/field';
+import { LanguageSwitcher } from '@/components/app/language-switcher';
+import { PasswordInput } from '@/components/app/password-input';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { usePageTitle } from '@/hooks/use-page-title';
+import { ApiError } from '@/lib/api-error';
+import { authStore, login } from '@/lib/auth';
+import { hasIdleNotice } from '@/lib/idle-storage';
+import { safeRedirect } from '@/lib/safe-redirect';
+
+/** Public demo build only: the shared account shown on the sign-in page (empty in a real deployment). */
+const DEMO_USERNAME = import.meta.env.VITE_DEMO_USERNAME ?? '';
+const DEMO_PASSWORD = import.meta.env.VITE_DEMO_PASSWORD ?? '';
+
+const SearchSchema = z.object({ redirect: z.string().optional() });
+
+export const Route = createFileRoute('/login')({
+  validateSearch: SearchSchema,
+  beforeLoad: () => {
+    // Someone already signed in has no business on the login page.
+    if (authStore.getSnapshot().status === 'authenticated') throw redirect({ to: '/' });
+  },
+  component: LoginPage,
+});
+
+function LoginPage() {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const search = Route.useSearch();
+  const [formError, setFormError] = useState<ApiError | null>(null);
+  usePageTitle('auth.login.title');
+
+  const form = useForm({
+    resolver: zodResolver(LoginBody),
+    defaultValues: { username: '', password: '' },
+    mode: 'onTouched',
+  });
+
+  const onSubmit = form.handleSubmit(async (values) => {
+    setFormError(null);
+    try {
+      const user = await login(values);
+      await navigate({ to: user.mustChangePassword ? '/change-password' : safeRedirect(search.redirect) });
+    } catch (error) {
+      // Never say which of the two fields was wrong: that would confirm a username exists.
+      setFormError(error instanceof ApiError ? error : new ApiError('UNKNOWN_ERROR', 0));
+    }
+  });
+
+  return (
+    <main className="flex min-h-dvh items-center justify-center p-4">
+      <Card className="w-full max-w-sm">
+        <CardHeader>
+          {/* The demo brand mark; decorative, the app's name is the description below. */}
+          <img
+            src="/brand/demo-mark.svg"
+            alt=""
+            width={96}
+            height={96}
+            className="mx-auto mb-2 size-24 rounded-2xl shadow-sm"
+          />
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex flex-col gap-1.5">
+              <CardTitle className="text-xl">{t('auth.login.title')}</CardTitle>
+              <CardDescription>{t('common.appName')}</CardDescription>
+            </div>
+            <LanguageSwitcher compact />
+          </div>
+        </CardHeader>
+
+        <CardContent>
+          {DEMO_USERNAME && DEMO_PASSWORD ? (
+            <div className="bg-muted/60 mb-4 flex flex-col gap-2 rounded-lg border p-3 text-sm">
+              <div className="flex items-center justify-between gap-2">
+                <span className="font-semibold">{t('auth.login.demoTitle')}</span>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => {
+                    form.setValue('username', DEMO_USERNAME, { shouldValidate: true });
+                    form.setValue('password', DEMO_PASSWORD, { shouldValidate: true });
+                  }}
+                >
+                  {t('auth.login.demoFill')}
+                </Button>
+              </div>
+              <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1" dir="ltr">
+                <dt className="text-muted-foreground">{t('auth.login.username')}</dt>
+                <dd className="font-mono select-all">{DEMO_USERNAME}</dd>
+                <dt className="text-muted-foreground">{t('auth.login.password')}</dt>
+                <dd className="font-mono select-all">{DEMO_PASSWORD}</dd>
+              </dl>
+              <p className="text-muted-foreground text-xs">{t('auth.login.demoHint')}</p>
+            </div>
+          ) : null}
+          <form onSubmit={(event) => void onSubmit(event)} className="flex flex-col gap-4" noValidate>
+            {/* Signed out for inactivity (Q136): said until the next sign-in, so a reload does not lose the reason. */}
+            {hasIdleNotice() && !formError ? (
+              <Alert>
+                <AlertDescription>{t('auth.idle.signedOut', { minutes: SESSION_IDLE_MINUTES })}</AlertDescription>
+              </Alert>
+            ) : null}
+            {formError ? (
+              <Alert variant="destructive">
+                {/* RATE_LIMITED and the LOGIN_*THROTTLED codes say how long to wait; the wait travels in `details`. */}
+                <AlertDescription>{t(`errors.${formError.code}`, { ...formError.details })}</AlertDescription>
+              </Alert>
+            ) : null}
+
+            <Field>
+              <FieldLabel htmlFor="username">{t('auth.login.username')}</FieldLabel>
+              <Input
+                id="username"
+                autoComplete="username"
+                autoFocus
+                aria-invalid={Boolean(form.formState.errors.username)}
+                aria-describedby="username-error"
+                {...form.register('username')}
+              />
+              <FieldError id="username-error" message={form.formState.errors.username?.message} />
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="password">{t('auth.login.password')}</FieldLabel>
+              <PasswordInput
+                id="password"
+                autoComplete="current-password"
+                aria-invalid={Boolean(form.formState.errors.password)}
+                aria-describedby="password-error"
+                {...form.register('password')}
+              />
+              <FieldError id="password-error" message={form.formState.errors.password?.message} />
+            </Field>
+
+            <Button type="submit" disabled={form.formState.isSubmitting}>
+              {t('auth.login.submit')}
+            </Button>
+            <p className="text-muted-foreground text-sm">{t('auth.login.forgotHint')}</p>
+          </form>
+        </CardContent>
+      </Card>
+    </main>
+  );
+}

@@ -1,0 +1,556 @@
+/* §7.16.3, inlined (`?inline`) by the receipt routes alone (through ReceiptPrintPage) and removed with them, and
+   copied into the blank frame that prints a receipt in place (print-job.tsx, Q140) — never into the app's own page.
+   The layout is fixed in millimetres: the UI font-size preference and theme never apply, and nothing may overflow a half. */
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
+@media print {
+  html,
+  body {
+    margin: 0;
+    background: #fff;
+  }
+  .receipt-toolbar {
+    display: none;
+  }
+}
+.receipt {
+  font-family: 'Noto Sans Arabic Variable', 'Inter Variable', sans-serif;
+  font-size: 10pt;
+  line-height: 1.35;
+  color: #000;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.receipt .num {
+  font-family: 'Inter Variable', sans-serif;
+  direction: ltr;
+  unicode-bidi: isolate;
+  font-variant-numeric: tabular-nums;
+}
+.sheet {
+  width: 210mm;
+  height: 297mm;
+  box-sizing: border-box;
+  overflow: hidden;
+  break-after: page;
+  page-break-after: always;
+  background: #fff;
+}
+.sheet:last-child {
+  break-after: auto;
+  page-break-after: auto;
+}
+.half {
+  position: relative;
+  height: 148.5mm;
+  box-sizing: border-box;
+  padding: 8mm 10mm;
+  display: flex;
+  flex-direction: column;
+  gap: 4mm;
+  overflow: hidden;
+}
+.half + .half {
+  border-top: 0.3mm dashed #000;
+} /* the cut line, exactly at 148.5 mm */
+.cut-mark {
+  position: absolute;
+  inset-inline-start: 4mm;
+  top: 0;
+  margin-top: -2.5mm;
+  width: 5mm;
+  height: 5mm;
+  background: #fff;
+}
+.block-header {
+  height: 22mm;
+  display: flex;
+  justify-content: space-between;
+  gap: 4mm;
+}
+.block-parties {
+  height: 24mm;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4mm;
+}
+.block-parties > div {
+  border: 0.2mm solid #000;
+  padding: 2mm;
+  overflow: hidden;
+}
+/* The factory's name and details, and a receipt's title (Q151: classes, so a receipt's own design can restyle them). */
+.factory-name {
+  font-size: 13pt;
+  font-weight: 700;
+}
+.factory-meta {
+  font-size: 8.5pt;
+}
+.doc-title {
+  font-size: 12pt;
+  font-weight: 700;
+}
+/* A sheet that is not the last says the receipt goes on, where its total would be. */
+.continued {
+  font-size: 9pt;
+  font-style: italic;
+}
+/* The heading of a parties box: customer, driver, order (Q137). */
+.box-title {
+  font-size: 9pt;
+  font-weight: 600;
+}
+.block-lines {
+  height: 49mm;
+} /* 1 header row + 6 body rows, 7mm each */
+.block-footer {
+  height: 20mm;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+/* Q150: the footer of the last sheet when the customer's earlier orders are listed. Since Q151 the hand-over footer
+   is a row — the details beside the totals, four since Q178 (about 24 mm) —; the 25 mm is the budget §7.16.3 grants
+   it, 0.5 mm of the half's 5.5 mm to spare. */
+.block-footer.with-older {
+  height: 25mm;
+}
+/* Q150: a copy on an A4 page of its own, when the rows are more than a half holds: the half's padding and blocks,
+   the table 196 mm high — a header row and 27 rows of 7 mm (RECEIPT_ROWS_PER_PAGE). */
+.page {
+  height: 297mm;
+  box-sizing: border-box;
+  padding: 8mm 10mm;
+  display: flex;
+  flex-direction: column;
+  gap: 4mm;
+  overflow: hidden;
+}
+.page .block-lines {
+  height: 196mm;
+}
+.lines {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.lines th,
+.lines td {
+  height: 7mm;
+  padding: 0 1.5mm;
+  border: 0.2mm solid #000;
+  vertical-align: middle;
+}
+.lines th {
+  font-size: 8.5pt;
+  font-weight: 600;
+  background: #f0f0f0;
+}
+.lines td.col-item {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* Q183: a pallet type's name — one line, or two smaller, or three smaller still and "…" — within the row's 7 mm. */
+.item-name {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.item-name[data-lines='2'],
+.item-name[data-lines='3'] {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  /* Room above the first line and below the last for Sorani's marks, inside the row's 7 mm. */
+  padding-block: 0.15mm;
+}
+.item-name[data-lines='2'] {
+  -webkit-line-clamp: 2;
+  font-size: 7.5pt;
+  line-height: 3.2mm;
+}
+.item-name[data-lines='3'] {
+  -webkit-line-clamp: 3;
+  font-size: 5.6pt;
+  line-height: 2.1mm;
+}
+/* Measuring the text unclamped (fitItemName): the same size and lines, every line shown. */
+.item-name[data-probe] {
+  display: block;
+  -webkit-line-clamp: none;
+}
+.item-name.lines-2 {
+  -webkit-line-clamp: 2;
+  font-size: 8pt;
+  line-height: 3.2mm;
+  max-height: 6.4mm;
+}
+.item-name.lines-3 {
+  -webkit-line-clamp: 3;
+  font-size: 6.3pt;
+  line-height: 2.25mm;
+  max-height: 6.75mm;
+}
+/* Q150: what the customer still holds of earlier orders, a row per item and price (Q158), under a heading row,
+   shaded so that a black-and-white print still tells them from this order's. */
+.lines tr.older-heading td {
+  font-size: 8.5pt;
+  font-weight: 600;
+  background: #d9d9d9;
+  /* Q178: it names the columns of the rows under it, each on one line (Q179); none runs into the next column. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* Q179: the column names, short, at 8 pt with less padding, so each holds one line in its column, from the right as
+   Sorani reads; the figures under them take the same padding. */
+.lines tr.older-heading td + td,
+.lines tr.older td + td {
+  padding: 0 0.8mm;
+}
+.lines tr.older-heading td + td {
+  font-size: 8pt;
+}
+.lines tr.older td {
+  background: #f0f0f0;
+}
+/* Q175: other orders' pallets that came back with this order, under their own heading row, shaded like the earlier
+   pallets so a black-and-white print tells them from this order's lines. */
+.lines tr.with-heading td {
+  font-size: 8.5pt;
+  font-weight: 600;
+  background: #d9d9d9;
+}
+.lines tr.with td {
+  background: #f0f0f0;
+}
+/* Q182: the order's money once something came back, one line of figures under its pallets. */
+.lines tr.settlement td {
+  font-size: 8pt;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lines tr.settlement .settle-part + .settle-part::before {
+  content: ' · ';
+}
+/* Q181: what the factory still owes them, shaded like the other parts for a black-and-white print. */
+.lines tr.owed-heading td {
+  font-size: 8.5pt;
+  font-weight: 600;
+  background: #d9d9d9;
+}
+.lines tr.owed td {
+  background: #f0f0f0;
+}
+.lines .num-cell {
+  text-align: end;
+}
+.col-no {
+  width: 8mm;
+}
+/* The quantity and what became of it so far — accepted, damaged, still out (Q134) — share one width. The seven
+   fixed columns take 133 mm of the half's 190; the item name has the rest. */
+.col-qty {
+  width: 18mm;
+}
+.col-unit {
+  width: 24mm;
+}
+.col-total {
+  width: 29mm;
+}
+/* Q137: the money receipt's balance, a row per figure, in the height the lines table has on the hand-over
+   receipt (at most five rows of 8 mm in 49 mm). */
+.block-money {
+  height: 49mm;
+}
+/* Q167: beside a return's pallets the balance takes only its rows, so both fit a half. */
+.block-money.with-lines {
+  height: auto;
+}
+.block-return-lines .col-item {
+  width: auto;
+}
+.block-return-lines td {
+  white-space: nowrap;
+}
+.block-return-lines .col-unit,
+.block-return-lines .col-total {
+  width: 34mm;
+}
+.money {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.money th,
+.money td {
+  height: 8mm;
+  padding: 0 2mm;
+  border: 0.2mm solid #000;
+  vertical-align: middle;
+}
+.money th {
+  width: 70mm;
+  font-weight: 600;
+  text-align: start;
+  background: #f0f0f0;
+}
+.money td {
+  text-align: end;
+}
+.money td.text {
+  text-align: start;
+}
+.money .key th,
+.money .key td {
+  font-size: 12pt;
+  font-weight: 700;
+}
+/* Q137: the money receipt's footer is a row — its two lines at the start, the reversed stamp (if any) in a column
+   of its own at the end, so the stamp covers no text, whatever the lines hold. */
+.money-footer {
+  flex-direction: row;
+  align-items: center;
+  gap: 4mm;
+}
+.footer-lines {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+/* A reversed payment or refund: no copy can pass as valid money. */
+.stamp {
+  flex: none;
+  transform: rotate(-6deg);
+  border: 0.8mm solid #b00000;
+  color: #b00000;
+  padding: 1mm 4mm;
+  font-size: 14pt;
+  font-weight: 700;
+  white-space: nowrap;
+}
+/* Q139: the transactions receipt's columns; the type has the rest of the half's 190 mm (58 mm). */
+.col-date {
+  width: 24mm;
+}
+.col-receipt {
+  width: 24mm;
+}
+.col-amount {
+  width: 30mm;
+}
+.col-status {
+  width: 46mm;
+}
+.lines td.status {
+  color: #b00000;
+  font-size: 8.5pt;
+  font-weight: 600;
+}
+/* A reversed row is listed but counts in no total: its amount is struck through. */
+.lines tr.reversed td.amount {
+  text-decoration: line-through;
+}
+.clamp {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@media screen {
+  body {
+    background: #e5e5e5;
+  }
+  .sheet {
+    margin: 8mm auto;
+    box-shadow: 0 1mm 4mm rgb(0 0 0 / 0.25);
+  }
+}
+/* Q151: the hand-over receipt's own design, chosen by the business from five (design 5): blue for the receipt and
+   this order, amber for the customer's earlier pallets still out. In black and white the blue prints dark and the
+   amber light, so the two still tell apart. The blocks keep their heights (§7.16.3); only their look changes. */
+.handover {
+  --blue: #0b5394;
+  --blue-soft: #f1f6fb;
+  --blue-line: #b9cde2;
+  --amber: #f6b26b;
+  --amber-edge: #e69138;
+  --amber-soft: #fdf1e3;
+  --amber-line: #efc79c;
+  --amber-ink: #7a4500;
+  color: #10243a;
+}
+.handover .factory-name,
+.handover .doc-title {
+  font-family: 'Noto Kufi Arabic Variable', 'Noto Sans Arabic Variable', sans-serif;
+}
+.handover .factory-name {
+  font-size: 12.5pt;
+  font-weight: 800;
+  color: var(--blue);
+  /* Kufi at 800 is wider than the other receipts' face: one line, clipped, so a long name cannot outgrow 22 mm. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* The title box keeps its width; the factory's side gives way, down to its clipped name. */
+.handover .block-header > div:first-child,
+.handover .block-header > div:first-child > div {
+  flex: 1;
+  min-width: 0;
+}
+.handover .doc {
+  flex: none;
+}
+.handover .factory-meta {
+  font-size: 8pt;
+  color: #4a5d72;
+}
+.handover .doc {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1.5mm 4mm;
+  border-radius: 1.5mm;
+  background: var(--blue);
+  color: #fff;
+  font-size: 8.5pt;
+  text-align: center;
+}
+.handover .doc .num {
+  font-size: 10pt;
+  font-weight: 700;
+}
+.handover .doc-title {
+  font-size: 10.5pt;
+}
+.handover .block-parties > div {
+  border: 0;
+  border-top: 0.8mm solid var(--blue);
+  padding: 1.4mm 3mm;
+  background: var(--blue-soft);
+}
+.handover .box-title {
+  font-weight: 700;
+  color: var(--blue);
+}
+.handover .lines th {
+  border-color: var(--blue);
+  background: var(--blue);
+  color: #fff;
+}
+.handover .lines td {
+  border-color: var(--blue-line);
+}
+.handover .lines td.line-total {
+  font-weight: 700;
+  color: var(--blue);
+}
+.handover .lines tr.older-heading td {
+  border-color: var(--amber-edge);
+  background: var(--amber);
+  color: #3d2400;
+  font-weight: 700;
+}
+.handover .lines tr.older td {
+  border-color: var(--amber-line);
+  background: var(--amber-soft);
+}
+.handover .lines tr.older td.line-total {
+  font-weight: 700;
+  color: var(--amber-ink);
+}
+/* Green for what came back with another order (Q175), apart from the blue order and the amber earlier pallets. */
+.handover .lines tr.with-heading td {
+  border-color: #6aa84f;
+  background: #b6d7a8;
+  color: #1e3d12;
+  font-weight: 700;
+}
+.handover .lines tr.with td {
+  border-color: #c9e2bd;
+  background: #eef7e9;
+}
+/* The order's money in its blue (Q182), the figure owed now in bold. */
+.handover .lines tr.settlement td {
+  background: var(--blue-soft);
+  color: var(--blue);
+}
+.handover .lines tr.settlement .settle-part:first-child {
+  font-weight: 800;
+}
+/* Purple for what the factory still owes them (Q181), apart from the blue, amber and green parts. */
+.handover .lines tr.owed-heading td {
+  border-color: #8e7cc3;
+  background: #d9d2e9;
+  color: #2b1d52;
+  font-weight: 700;
+}
+.handover .lines tr.owed td {
+  border-color: #ddd6ee;
+  background: #f3f0fa;
+}
+/* The footer: payment type, print date and sheet at the start; the totals at the end, ending on the figure in blue. */
+.handover .block-footer {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 4mm;
+}
+.handover .footer-side {
+  display: flex;
+  flex-direction: column;
+  gap: 1mm;
+  font-size: 8.3pt;
+  color: #4a5d72;
+}
+.handover .pay {
+  align-self: flex-start;
+  padding: 0.5mm 2.5mm;
+  border: 0.3mm solid var(--blue);
+  border-radius: 1mm;
+  background: var(--blue-soft);
+  color: var(--blue);
+  font-size: 9pt;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.handover .sums {
+  flex: 1;
+  min-width: 0;
+}
+.handover .sum {
+  display: flex;
+  justify-content: space-between;
+  gap: 3mm;
+  padding: 0.7mm 3mm;
+  font-size: 9pt;
+  white-space: nowrap;
+}
+.handover .sum-order {
+  background: var(--blue-soft);
+}
+.handover .sum-older {
+  background: var(--amber-soft);
+}
+.handover .sum-grand {
+  border-radius: 0 0 1.5mm 1.5mm;
+  background: var(--blue);
+  color: #fff;
+  font-size: 11pt;
+  font-weight: 800;
+}
+.handover .sum-grand:only-child {
+  border-radius: 1.5mm;
+}

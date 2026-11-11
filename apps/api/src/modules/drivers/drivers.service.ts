@@ -1,0 +1,182 @@
+import { Injectable } from '@nestjs/common';
+import type {
+  DriverCreateBody,
+  DriverDto,
+  DriverListQuery,
+  DriverPhoneCheckDto,
+  DriverPhoneCheckQuery,
+  DriverPhoneMatchDto,
+  DriverUpdateBody,
+  ErrorDetails,
+  PageDto,
+} from '@pallet/shared';
+import type { AuthContext } from '../../common/auth-context';
+import { Clock } from '../../common/clock';
+import { ApiError } from '../../common/errors/api-error';
+import { escapeLikePattern, phoneSearchPattern } from '../../common/utils/search';
+import { parseSort } from '../../common/utils/sort';
+import { assertVersion, changedFields } from '../../common/utils/versioning';
+import { pageArgs, toPage } from '../../common/utils/pagination';
+import type { Prisma } from '../../generated/prisma/client';
+import { lockDriver } from '../../prisma/locks';
+import { PrismaService } from '../../prisma/prisma.service';
+import { pickSnapshot, toAuditSnapshot } from '../audit/audit-snapshot';
+import { AuditService } from '../audit/audit.service';
+import { toDriverDto } from './drivers.mapper';
+import { runInTransaction } from '../../prisma/transaction';
+
+const SORT_FIELDS = { name: 'name', createdAt: 'createdAt' } as const;
+const EDITABLE_FIELDS = ['name', 'phone', 'carNumber'] as const;
+
+/** Drivers (§6.18) are references, not snapshots: an order shows its driver's current details. */
+@Injectable()
+export class DriversService {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly clock: Clock,
+    private readonly audit: AuditService,
+  ) {}
+
+  async list(query: DriverListQuery): Promise<PageDto<DriverDto>> {
+    const phone = query.q ? phoneSearchPattern(query.q) : undefined;
+    const where: Prisma.DriverWhereInput = {
+      ...(query.includeArchived ? {} : { archivedAt: null }),
+      ...(query.q
+        ? {
+            OR: [
+              { name: { contains: escapeLikePattern(query.q), mode: 'insensitive' } },
+              { carNumber: { contains: escapeLikePattern(query.q), mode: 'insensitive' } },
+              ...(phone ? [{ phone: { contains: phone } }] : []),
+            ],
+          }
+        : {}),
+    };
+    const { field, direction } = parseSort<keyof typeof SORT_FIELDS>(query.sort);
+
+    const [total, rows] = await Promise.all([
+      this.prisma.driver.count({ where }),
+      this.prisma.driver.findMany({
+        where,
+        orderBy: [{ [SORT_FIELDS[field]]: direction }, { id: 'asc' }],
+        ...pageArgs(query),
+      }),
+    ]);
+    return toPage(rows.map(toDriverDto), query, total);
+  }
+
+  /** Archived drivers are returned too: an old order still names its driver. */
+  async get(driverId: number): Promise<DriverDto> {
+    const driver = await this.prisma.driver.findUnique({ where: { id: driverId } });
+    if (!driver) throw new ApiError('DRIVER_NOT_FOUND', { driverId });
+    return toDriverDto(driver);
+  }
+
+  /** The dialog's live warning (§7.3.13): the same comparison as the one a save makes. */
+  async phoneCheck(query: DriverPhoneCheckQuery): Promise<DriverPhoneCheckDto> {
+    return {
+      normalizedPhone: query.phone,
+      matches: await this.findPhoneMatches(this.prisma, query.phone, query.excludeId),
+    };
+  }
+
+  /** A shared phone is a warning, not a block (Q135): confirmed, the driver is saved. */
+  async create(body: DriverCreateBody, actor: AuthContext): Promise<DriverDto> {
+    const { confirmDuplicatePhone, ...fields } = body;
+    if (!confirmDuplicatePhone) await this.assertNoDuplicate(this.prisma, fields.phone);
+
+    return runInTransaction(this.prisma, async (tx) => {
+      const driver = await tx.driver.create({ data: { ...fields, createdByUserId: actor.userId } });
+      await this.audit.record(tx, {
+        action: 'CREATE',
+        entityType: 'DRIVER',
+        entityId: String(driver.id),
+        summaryParams: { name: driver.name },
+        after: toAuditSnapshot('DRIVER', driver),
+      });
+      return toDriverDto(driver);
+    });
+  }
+
+  update(driverId: number, body: DriverUpdateBody): Promise<DriverDto> {
+    return runInTransaction(this.prisma, async (tx) => {
+      await lockDriver(tx, driverId);
+      const before = await tx.driver.findUnique({ where: { id: driverId } });
+      if (!before) throw new ApiError('DRIVER_NOT_FOUND', { driverId });
+      if (before.archivedAt) throw new ApiError('DRIVER_ARCHIVED', { driverId });
+      assertVersion(before.version, body.version);
+
+      const changed = changedFields(body, before, EDITABLE_FIELDS);
+      // Q37: a save that changes nothing writes nothing — no version bump, no history row.
+      if (changed.length === 0) return toDriverDto(before);
+      // Only a number that changes is checked: one already on file was warned about when it was saved.
+      if (body.phone !== undefined && changed.includes('phone') && !body.confirmDuplicatePhone) {
+        await this.assertNoDuplicate(tx, body.phone, driverId);
+      }
+
+      const after = await tx.driver.update({
+        where: { id: driverId },
+        data: { name: body.name, phone: body.phone, carNumber: body.carNumber, version: { increment: 1 } },
+      });
+      await this.audit.record(tx, {
+        action: 'UPDATE',
+        entityType: 'DRIVER',
+        entityId: String(driverId),
+        summaryParams: { name: after.name, fields: changed },
+        before: pickSnapshot(toAuditSnapshot('DRIVER', before), changed),
+        after: pickSnapshot(toAuditSnapshot('DRIVER', after), changed),
+      });
+      return toDriverDto(after);
+    });
+  }
+
+  /** Always an archive, allowed at any time: open orders keep referring to the driver. */
+  archive(driverId: number, version: number, actor: AuthContext): Promise<DriverDto> {
+    return runInTransaction(this.prisma, async (tx) => {
+      await lockDriver(tx, driverId);
+      const before = await tx.driver.findUnique({ where: { id: driverId } });
+      if (!before) throw new ApiError('DRIVER_NOT_FOUND', { driverId });
+      if (before.archivedAt) throw new ApiError('DRIVER_ALREADY_ARCHIVED', { driverId });
+      assertVersion(before.version, version);
+
+      const after = await tx.driver.update({
+        where: { id: driverId },
+        data: { archivedAt: this.clock.now(), archivedByUserId: actor.userId, version: { increment: 1 } },
+      });
+      await this.audit.record(tx, {
+        action: 'DELETE',
+        entityType: 'DRIVER',
+        entityId: String(driverId),
+        summaryParams: { name: after.name },
+        before: toAuditSnapshot('DRIVER', before),
+        after: toAuditSnapshot('DRIVER', after),
+      });
+      return toDriverDto(after);
+    });
+  }
+
+  private async assertNoDuplicate(client: Prisma.TransactionClient, phone: string, excludeId?: number): Promise<void> {
+    const matches = await this.findPhoneMatches(client, phone, excludeId);
+    if (matches.length > 0) {
+      throw new ApiError('DRIVER_PHONE_DUPLICATE', { matches } satisfies ErrorDetails<'DRIVER_PHONE_DUPLICATE'>);
+    }
+  }
+
+  /** Every other driver, archived ones included, holding the normalised `phone` (Q13, Q135). */
+  private async findPhoneMatches(
+    client: Prisma.TransactionClient,
+    phone: string,
+    excludeId?: number,
+  ): Promise<DriverPhoneMatchDto[]> {
+    const rows = await client.driver.findMany({
+      where: { phone, ...(excludeId === undefined ? {} : { id: { not: excludeId } }) },
+      select: { id: true, name: true, carNumber: true, archivedAt: true },
+      orderBy: { id: 'asc' },
+    });
+    return rows.map((row) => ({
+      driverId: row.id,
+      name: row.name,
+      carNumber: row.carNumber,
+      archived: row.archivedAt !== null,
+    }));
+  }
+}

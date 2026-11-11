@@ -1,0 +1,264 @@
+import { BusinessDate, PAYMENT_TYPES, type PaymentType } from '@pallet/shared';
+import { useQuery } from '@tanstack/react-query';
+import { Link, createFileRoute } from '@tanstack/react-router';
+import { ClipboardList, Plus } from 'lucide-react';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { z } from 'zod';
+import { DataTable } from '@/components/app/data-table';
+import { DateRangePicker } from '@/components/app/date-picker';
+import { EntityCombobox } from '@/components/app/entity-combobox';
+import { FiltersToggle, ListEmpty, ListFilters, SearchBox } from '@/components/app/list-controls';
+import { PageSkeleton, QueryErrorState } from '@/components/app/states';
+import { TabSelect } from '@/components/app/tab-select';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsTrigger } from '@/components/ui/tabs';
+import { orderListQuery } from '@/features/orders/api';
+import { ORDER_COLUMNS, orderRowLink } from '@/features/orders/order-columns';
+import { MD_QUERY } from '@/hooks/use-media-query';
+import { usePageTitle } from '@/hooks/use-page-title';
+import { useListRoute } from '@/hooks/use-list-route';
+import { useCan } from '@/lib/auth';
+import { listSearch, sortSearch } from '@/lib/list-search';
+import { requirePermission } from '@/lib/route-guards';
+
+// "All" leads the tabs and is where the list opens (Q55, amended by Q64).
+const STATUSES = ['ALL', 'OPEN', 'SETTLED', 'CANCELLED'] as const;
+const ALL_TYPES = 'all';
+const id = z.coerce.number().int().min(1).optional().catch(undefined);
+
+const SearchSchema = z.object({
+  ...listSearch,
+  status: z.enum(STATUSES).optional().catch(undefined),
+  customerId: id,
+  driverId: id,
+  itemId: id,
+  paymentType: z.enum(PAYMENT_TYPES).optional().catch(undefined),
+  dateFrom: BusinessDate.optional().catch(undefined),
+  dateTo: BusinessDate.optional().catch(undefined),
+  sort: sortSearch(['orderNumber', 'date', 'owed', 'outValue']),
+});
+
+export const Route = createFileRoute('/_app/orders/')({
+  validateSearch: SearchSchema,
+  beforeLoad: () => requirePermission('orders.view'),
+  component: OrdersPage,
+});
+
+function OrdersPage() {
+  const { t } = useTranslation();
+  const search = Route.useSearch();
+  const canCreate = useCan('orders.create');
+  usePageTitle('orders.list.title');
+
+  const { term, setTerm, setFilter, clearFilters, pageProps } = useListRoute(Route.fullPath, search);
+
+  // A range typed back to front is not sent: the API would refuse it (§6.2).
+  const rangeInvalid = Boolean(search.dateFrom && search.dateTo && search.dateFrom > search.dateTo);
+  const params = {
+    status: search.status ?? 'ALL',
+    q: search.q,
+    customerId: search.customerId,
+    driverId: search.driverId,
+    itemId: search.itemId,
+    paymentType: search.paymentType,
+    dateFrom: search.dateFrom,
+    dateTo: search.dateTo,
+    sort: search.sort,
+    page: search.page,
+    pageSize: search.pageSize,
+  };
+  const orders = useQuery({ ...orderListQuery(params), enabled: !rangeInvalid });
+
+  const newOrder = canCreate ? (
+    <Button asChild>
+      <Link to="/orders/new">
+        <Plus aria-hidden />
+        {t('orders.list.new')}
+      </Link>
+    </Button>
+  ) : null;
+  // The date range counts once, however many of its ends are set.
+  const activeFilters = [
+    search.customerId,
+    search.driverId,
+    search.itemId,
+    search.paymentType,
+    search.dateFrom ?? search.dateTo,
+  ].filter(Boolean).length;
+  const filtered = Boolean(search.q) || activeFilters > 0;
+  // The filter card starts hidden, unless the address already carries a filter that it would otherwise hide (Q53).
+  // Below `md` the same flag opens the sheet, which must not spring open on arrival: there it starts shut.
+  const [filtersOpen, setFiltersOpen] = useState(() => activeFilters > 0 && window.matchMedia(MD_QUERY).matches);
+
+  return (
+    <>
+      {/* The top bar already names the page; the heading stays for screen readers only (Q57). */}
+      <h1 className="sr-only">{t('orders.list.title')}</h1>
+
+      {/*
+        One row from `md`: the search box and the status tabs at the reading start, the actions at the end
+        (Q55, Q57). Below it the four tabs and three buttons cannot share a line, so they pair up: search with
+        the filter funnel, then the status as a dropdown with the new-order action (Q64).
+      */}
+      <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center">
+        {/* `md:contents` dissolves each pair into the one row above, where `order` puts them back in reading order. */}
+        <div className="flex items-center gap-2 md:contents">
+          <div className="min-w-0 flex-1 md:order-1 md:flex-none">
+            <SearchBox value={term} onChange={setTerm} />
+          </div>
+          <div className="md:order-3 md:ms-auto">
+            <FiltersToggle
+              open={filtersOpen}
+              onToggle={() => setFiltersOpen((open) => !open)}
+              activeCount={activeFilters}
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 md:contents">
+          <div className="min-w-0 flex-1 md:order-2 md:flex-none">
+            <OrderStatusFilter
+              value={params.status}
+              onChange={(status) => setFilter({ status: status === 'ALL' ? undefined : status })}
+            />
+          </div>
+          {newOrder ? <div className="md:order-4">{newOrder}</div> : null}
+        </div>
+      </div>
+
+      <ListFilters
+        activeCount={activeFilters}
+        onClear={() =>
+          setFilter({
+            customerId: undefined,
+            driverId: undefined,
+            itemId: undefined,
+            paymentType: undefined,
+            dateFrom: undefined,
+            dateTo: undefined,
+          })
+        }
+        error={rangeInvalid ? t('errors.DATE_RANGE_INVALID') : undefined}
+        open={filtersOpen}
+        onOpenChange={setFiltersOpen}
+      >
+        <div className="w-full md:w-56">
+          <EntityCombobox
+            kind="customer"
+            aria-label={t('orders.fields.customer')}
+            includeArchived
+            value={search.customerId ?? null}
+            onChange={(customerId) => setFilter({ customerId: customerId ?? undefined })}
+            placeholder={t('orders.list.anyCustomer')}
+          />
+        </div>
+        <div className="w-full md:w-56">
+          <EntityCombobox
+            kind="driver"
+            aria-label={t('orders.fields.driver')}
+            includeArchived
+            value={search.driverId ?? null}
+            onChange={(driverId) => setFilter({ driverId: driverId ?? undefined })}
+            placeholder={t('orders.list.anyDriver')}
+          />
+        </div>
+        <div className="w-full md:w-56">
+          <EntityCombobox
+            kind="item"
+            aria-label={t('orders.lines.item')}
+            includeArchived
+            value={search.itemId ?? null}
+            onChange={(itemId) => setFilter({ itemId: itemId ?? undefined })}
+            placeholder={t('orders.list.anyItem')}
+          />
+        </div>
+        <Select
+          value={search.paymentType ?? ALL_TYPES}
+          onValueChange={(value) =>
+            setFilter({ paymentType: value === ALL_TYPES ? undefined : (value as PaymentType) })
+          }
+        >
+          <SelectTrigger className="w-full md:w-44" aria-label={t('orders.fields.paymentType')}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={ALL_TYPES}>{t('orders.list.anyPaymentType')}</SelectItem>
+            {PAYMENT_TYPES.map((type) => (
+              <SelectItem key={type} value={type}>
+                {t(`enums.paymentType.${type}`)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <DateRangePicker
+          idPrefix="orders-date"
+          from={search.dateFrom}
+          to={search.dateTo}
+          onChange={({ from, to }) => setFilter({ dateFrom: from, dateTo: to })}
+          error={rangeInvalid ? t('errors.DATE_RANGE_INVALID') : undefined}
+        />
+      </ListFilters>
+
+      {rangeInvalid ? null : orders.isPending ? (
+        <PageSkeleton />
+      ) : orders.isError ? (
+        <QueryErrorState error={orders.error} onRetry={() => void orders.refetch()} />
+      ) : (
+        <DataTable
+          label={t('orders.list.title')}
+          columns={ORDER_COLUMNS}
+          rows={orders.data.items}
+          rowKey={(order) => order.id}
+          rowLink={orderRowLink}
+          total={orders.data.total}
+          page={orders.data.page}
+          pageSize={orders.data.pageSize}
+          sort={search.sort}
+          defaultSort="-orderNumber"
+          {...pageProps}
+          isFetching={orders.isFetching}
+          empty={
+            <ListEmpty
+              filtered={filtered}
+              onClearFilters={() => clearFilters({ status: search.status })}
+              icon={ClipboardList}
+              title={t('orders.list.empty')}
+              action={newOrder}
+            />
+          }
+        />
+      )}
+    </>
+  );
+}
+
+/**
+ * The status filter: tabs from `md`, a dropdown below it (Q64). Both drive the same search param.
+ */
+function OrderStatusFilter({
+  value,
+  onChange,
+}: {
+  value: (typeof STATUSES)[number];
+  onChange: (status: (typeof STATUSES)[number]) => void;
+}) {
+  const { t } = useTranslation();
+  const options = STATUSES.map((status) => ({
+    value: status,
+    label: t(status === 'ALL' ? 'orders.list.allStatuses' : `enums.orderStatus.${status}`),
+  }));
+
+  return (
+    <Tabs value={value} onValueChange={(status) => onChange(status as (typeof STATUSES)[number])}>
+      <TabSelect value={value} onChange={onChange} options={options} label={t('orders.list.status')}>
+        {options.map((option) => (
+          <TabsTrigger key={option.value} value={option.value}>
+            {option.label}
+          </TabsTrigger>
+        ))}
+      </TabSelect>
+    </Tabs>
+  );
+}

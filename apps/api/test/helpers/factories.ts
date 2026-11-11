@@ -1,0 +1,192 @@
+import { randomUUID } from 'node:crypto';
+import type { INestApplication } from '@nestjs/common';
+import {
+  type CustomerDto,
+  type DriverDto,
+  type ItemDto,
+  type OrderDetailDto,
+  type PaymentResultDto,
+  type ReturnResultDto,
+} from '@pallet/shared';
+import request from 'supertest';
+import argon2 from 'argon2';
+import type { GrantablePermissionKey } from '@pallet/shared';
+import { ARGON2_OPTIONS } from '../../src/modules/auth/password.constants';
+import { PrismaService } from '../../src/prisma/prisma.service';
+import { asUser, type Session } from './auth';
+
+export const EMPLOYEE_PASSWORD = 'employee-test-password';
+
+let employeeHash: string | undefined;
+
+export interface CreatedUser {
+  id: number;
+  username: string;
+  password: string;
+}
+
+/**
+ * Creates a user straight in the database rather than through `POST /api/users`: the API sets
+ * `mustChangePassword`, which would block every route a permission test wants to exercise.
+ * The hash is computed once — Argon2 is deliberately slow.
+ */
+export async function createUser(
+  app: INestApplication,
+  options: {
+    username: string;
+    role?: 'ADMIN' | 'EMPLOYEE';
+    permissions?: readonly GrantablePermissionKey[];
+    isActive?: boolean;
+    mustChangePassword?: boolean;
+  },
+): Promise<CreatedUser> {
+  employeeHash ??= await argon2.hash(EMPLOYEE_PASSWORD, ARGON2_OPTIONS);
+
+  const user = await app.get(PrismaService).user.create({
+    data: {
+      username: options.username,
+      displayName: options.username,
+      passwordHash: employeeHash,
+      role: options.role ?? 'EMPLOYEE',
+      isActive: options.isActive ?? true,
+      mustChangePassword: options.mustChangePassword ?? false,
+      permissions: { create: (options.permissions ?? []).map((permissionKey) => ({ permissionKey })) },
+    },
+  });
+
+  return { id: user.id, username: user.username, password: EMPLOYEE_PASSWORD };
+}
+
+export function createEmployee(
+  app: INestApplication,
+  permissions: readonly GrantablePermissionKey[] = [],
+  username = 'employee',
+): Promise<CreatedUser> {
+  return createUser(app, { username, permissions });
+}
+
+/**
+ * Creates an item through `POST /api/items`, with a first batch when `stock` is given, so the stock
+ * arrives the way it does in production: as a batch and its ledger row.
+ */
+export async function createItem(
+  app: INestApplication,
+  session: Session,
+  options: { name?: string; depositPrice?: number; stock?: number; minStock?: number | null } = {},
+): Promise<ItemDto> {
+  const response = await request(app.getHttpServer())
+    .post('/api/items')
+    .set(asUser(session))
+    .send({
+      name: options.name ?? 'Euro pallet',
+      depositPrice: options.depositPrice ?? 1_000,
+      minStock: options.minStock ?? null,
+      ...(options.stock ? { initialBatch: { date: '2026-09-01', quantity: options.stock, unitCost: 700 } } : {}),
+    })
+    .expect(201);
+  return response.body as ItemDto;
+}
+
+/** Creates a customer through `POST /api/customers`; a phone another customer holds needs `confirm`. */
+export async function createCustomer(
+  app: INestApplication,
+  session: Session,
+  options: {
+    name?: string;
+    phone?: string;
+    altPhone?: string | null;
+    creditLimit?: number | null;
+    confirm?: boolean;
+  } = {},
+): Promise<CustomerDto> {
+  const response = await request(app.getHttpServer())
+    .post('/api/customers')
+    .set(asUser(session))
+    .send({
+      name: options.name ?? 'Kurdistan Cement',
+      phone: options.phone ?? '07501234567',
+      altPhone: options.altPhone ?? null,
+      address: 'Erbil, 100 m road',
+      creditLimit: options.creditLimit ?? null,
+      confirmDuplicatePhone: options.confirm ?? false,
+    })
+    .expect(201);
+  return response.body as CustomerDto;
+}
+
+/**
+ * Creates a driver through `POST /api/drivers`. Fixtures share the default number, so the duplicate-phone warning
+ * (Q135) is answered ahead of time: it is `drivers.test.ts` that tests it.
+ */
+export async function createDriver(
+  app: INestApplication,
+  session: Session,
+  options: { name?: string; phone?: string; carNumber?: string } = {},
+): Promise<DriverDto> {
+  const response = await request(app.getHttpServer())
+    .post('/api/drivers')
+    .set(asUser(session))
+    .send({
+      name: options.name ?? 'Karwan Aziz',
+      phone: options.phone ?? '07701112233',
+      carNumber: options.carNumber ?? 'Erbil 12 A 34567',
+      confirmDuplicatePhone: true,
+    })
+    .expect(201);
+  return response.body as DriverDto;
+}
+
+/** Creates an order through `POST /api/orders`, as the web app does: LENT and dated 2026-09-10 unless told otherwise. */
+export async function createOrder(
+  app: INestApplication,
+  session: Session,
+  body: {
+    customerId: number;
+    driverId: number;
+    lines: { itemId: number; quantity: number; unitDeposit?: number }[];
+    paymentType?: 'CASH' | 'LENT';
+    date?: string;
+  },
+): Promise<OrderDetailDto> {
+  const response = await request(app.getHttpServer())
+    .post('/api/orders')
+    .set(asUser(session))
+    .set('Idempotency-Key', randomUUID())
+    .send({ paymentType: 'LENT', date: '2026-09-10', ...body })
+    .expect(201);
+  return response.body as OrderDetailDto;
+}
+
+/** Records a manual payment through `POST /api/orders/:orderId/payments`; returns the ledger row id. */
+export async function recordPayment(
+  app: INestApplication,
+  session: Session,
+  body: { orderId: number; amount: number; date: string },
+): Promise<number> {
+  const response = await request(app.getHttpServer())
+    .post(`/api/orders/${body.orderId}/payments`)
+    .set(asUser(session))
+    .set('Idempotency-Key', randomUUID())
+    .send({ amount: body.amount, date: body.date })
+    .expect(201);
+  return (response.body as PaymentResultDto).ledgerEntryId;
+}
+
+/** Records a return through `POST /api/orders/:orderId/returns`; returns the return's id. */
+export async function recordReturn(
+  app: INestApplication,
+  session: Session,
+  body: {
+    orderId: number;
+    date: string;
+    lines: { orderLineId: number; acceptedQuantity: number; damagedQuantity?: number }[];
+  },
+): Promise<number> {
+  const response = await request(app.getHttpServer())
+    .post(`/api/orders/${body.orderId}/returns`)
+    .set(asUser(session))
+    .set('Idempotency-Key', randomUUID())
+    .send({ date: body.date, lines: body.lines.map((line) => ({ damagedQuantity: 0, ...line })) })
+    .expect(201);
+  return (response.body as ReturnResultDto).returnId;
+}

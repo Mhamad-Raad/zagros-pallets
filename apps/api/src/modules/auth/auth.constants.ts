@@ -1,0 +1,55 @@
+/** Session and cookie constants (§6.8, §10.1 S10–S12). */
+
+import { ACCESS_TOKEN_TTL_MINUTES, SESSION_IDLE_MINUTES } from '@pallet/shared';
+
+export const REFRESH_COOKIE_NAME = 'pallet_rt';
+/** The cookie is only ever sent to the auth endpoints. */
+export const REFRESH_COOKIE_PATH = '/api/auth';
+
+export const ACCESS_TOKEN_TTL = `${ACCESS_TOKEN_TTL_MINUTES}m` as const;
+export const ACCESS_TOKEN_TTL_MS = ACCESS_TOKEN_TTL_MINUTES * 60 * 1000;
+
+/** Sliding lifetime of one refresh token. */
+export const REFRESH_SLIDING_MS = 14 * 24 * 60 * 60 * 1000;
+/** Absolute lifetime of a session family, however often it is rotated. */
+export const SESSION_ABSOLUTE_MS = 30 * 24 * 60 * 60 * 1000;
+/**
+ * The longest a session may go between two refreshes (Q136). The web stops refreshing once its user has been idle
+ * for `SESSION_IDLE_MINUTES` and signs out; a session nobody signed out — a closed laptop, a browser reopened the
+ * next day — ends here instead. It is the idle limit plus an access token's life, because a user who is not idle
+ * may still let that long pass: the page refreshes only while it is visible, and only once its token nears expiry.
+ */
+export const SESSION_IDLE_MS = SESSION_IDLE_MINUTES * 60 * 1000 + ACCESS_TOKEN_TTL_MS;
+/** A rotated token keeps working this long, for two tabs refreshing at once. */
+export const REFRESH_GRACE_MS = 30 * 1000;
+
+/** Login throttle (§6.8.2): five failures in a fifteen-minute window locks the (ip, username) pair. */
+export const LOGIN_FAILURE_WINDOW_MS = 15 * 60 * 1000;
+export const LOGIN_MAX_FAILURES = 5;
+export const LOCKOUT_BASE_MS = 60 * 1000;
+export const LOCKOUT_MAX_MS = 15 * 60 * 1000;
+
+/** Lock durations go 1, 2, 4, 8, 15, 15 … minutes. */
+export function lockoutDurationMs(lockoutCount: number): number {
+  return Math.min(LOCKOUT_MAX_MS, LOCKOUT_BASE_MS * 2 ** lockoutCount);
+}
+
+/**
+ * Account-wide ceiling (Q68): the failures on one username from every address together. Past it, only
+ * addresses that have signed in to the account before may try; others wait 5, 10, 20, 40, 60, 60 …
+ * minutes. It never stops the account's own devices, so nobody can lock a colleague out with it.
+ */
+export const ACCOUNT_THROTTLE_IP = '*';
+export const ACCOUNT_FAILURE_WINDOW_MS = 60 * 60 * 1000;
+export const ACCOUNT_MAX_FAILURES = 20;
+/**
+ * The ceiling is reached only while failures come from at least this many addresses (Q122): one address
+ * alone is already limited by its pair lock, and must not be able to hold every account's ceiling by itself.
+ */
+export const ACCOUNT_MIN_DISTINCT_ADDRESSES = 3;
+export const ACCOUNT_THROTTLE_BASE_MS = 5 * 60 * 1000;
+export const ACCOUNT_THROTTLE_MAX_MS = 60 * 60 * 1000;
+
+export function accountThrottleDurationMs(throttleCount: number): number {
+  return Math.min(ACCOUNT_THROTTLE_MAX_MS, ACCOUNT_THROTTLE_BASE_MS * 2 ** throttleCount);
+}

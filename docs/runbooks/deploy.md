@@ -1,0 +1,117 @@
+# Runbook — deploy a new version
+
+Normal path (automatic):
+
+1. Merge to `main`; wait for CI to be green.
+2. Tag: `git tag v1.4.0 && git push origin v1.4.0`.
+3. GitHub Actions `Deploy` runs CI, pushes `ghcr.io/mhamad-raad/pallet-api:<sha>` and `pallet-caddy:<sha>`, then SSHes to the VPS and runs `/opt/pallet/deploy/deploy.sh <sha>`.
+4. `deploy.sh` checks out `<sha>` in `/opt/pallet`, sets `APP_VERSION`, pulls images, stops the API, dumps the database to `/var/backups/pallet/pre-migrate/pre-migrate-<time>-<sha>.dump` (the newest five are kept), runs the `migrate` one-shot (migrations + grants + first-run seed), `docker compose up -d`, waits ≤ 60 s for the API health check, and rolls back automatically to the previous SHA on failure.
+5. Verify: open `https://<APP_DOMAIN>`, log in, open the dashboard; check `https://<APP_DOMAIN>/api/health` returns `{"status":"ok","db":"ok","version":"<sha>"}`.
+
+A red `Dependency audit` no longer stops a deploy: the deploy run shows it as a warning and carries on (ARCHITECTURE.md
+Q133), while CI on `main` stays red until the dependency is updated — do that in the next change.
+
+Manual path — only when GitHub Actions itself is unavailable, never to get around a failing test:
+
+1. Build and push images from a workstation: `docker build -f apps/api/Dockerfile -t ghcr.io/mhamad-raad/pallet-api:<sha> . && docker push …` (same for `deploy/caddy/Dockerfile`).
+2. `ssh <user>@<vps>` then `sudo /opt/pallet/deploy/deploy.sh <sha>`.
+
+## A failed migration
+
+`deploy.sh` rolls the images back and prints the path of the dump it took just before the migration. The previous version then runs again, but the database may hold part of the failed migration: Prisma does not wrap a migration in one transaction, and it records the failure in `_prisma_migrations`, so every later `migrate deploy` stops with `P3009` until the failure is resolved.
+
+1. See where it stands: `cd /opt/pallet && docker compose --profile migrate run --rm migrate node_modules/.bin/prisma migrate status`. It names the failed migration.
+2. Choose one way out:
+   - **Put the database back as it was (safest).** The API was stopped before the dump, so it holds everything written up to the deploy. Restore it into a side database and swap it in, as `restore-from-backup.md` does:
+
+     ```bash
+     cd /opt/pallet
+     docker compose stop caddy api
+     docker compose exec -T postgres psql -v ON_ERROR_STOP=1 -U postgres -d postgres \
+       -c "CREATE DATABASE pallet_premigrate OWNER pallet_owner ENCODING 'UTF8' TEMPLATE template0;"
+     docker compose exec -T postgres pg_restore -U pallet_owner -d pallet_premigrate --exit-on-error \
+       < /var/backups/pallet/pre-migrate/pre-migrate-<time>-<sha>.dump
+     ```
+
+     Give `pallet_premigrate` the database settings of `deploy/postgres/init/01-roles.sh` (the `psql` block in `deploy/backup/restore.sh` step 5, with that name), then rename `pallet` → `pallet_failed_migration` and `pallet_premigrate` → `pallet` (terminate the connections first, as "Undo a restore" shows), run `docker compose --profile migrate run --rm migrate` with the previous version checked out, and `docker compose up -d`. The failed migration is simply not recorded there; no `migrate resolve` is needed. Drop `pallet_failed_migration` once the app is verified (`reconcile.js` prints `0 differences`).
+
+   - **Finish or undo it by hand** (only when `migrate status` and the migration's SQL make clear what ran). Undo what the migration applied, then `docker compose --profile migrate run --rm migrate node_modules/.bin/prisma migrate resolve --rolled-back <migration_name>`; or, if you completed the rest by hand exactly as the file says, `… migrate resolve --applied <migration_name>`.
+3. Fix the migration in a new commit (never edit one that ran anywhere), let CI pass, and deploy again.
+
+Rules:
+
+- Migrations must be expand-only for one release (add columns/tables; drop only in the release after the code stops using them). This keeps rollback safe.
+- A short restart is acceptable (zero downtime is not required). Deploy outside factory working hours when possible.
+
+One-time VPS prerequisites: `/opt/pallet` is a git clone of the repository; `/opt/pallet/.env` exists (from `.env.example`); `docker login ghcr.io` done with a classic GitHub token that has only `read:packages` and an expiry you have written down (`rotate-secrets.md`, "GHCR token") — or both GHCR packages set to public; the `production` environment exists with the secrets `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY` and `VPS_KNOWN_HOSTS` ("The deploy key" below); the backup bucket has Object Lock and the VPS an append-only key (`backup-keys.md`).
+
+Repository settings (by hand, GitHub → Settings → Environments → `production`): add yourself as a required reviewer, and under "Deployment branches and tags" allow only `main` and tags matching `v*`. The workflow also refuses any other ref on its own (ARCHITECTURE.md Q76).
+
+Servers set up before 2026-09-26 gave the owner role `CREATEDB`, which production never needs. Remove it once: `docker compose exec -T postgres psql -U postgres -c "ALTER ROLE pallet_owner NOCREATEDB;"`.
+
+## The server keeps itself patched
+
+The server is in UTC (`timedatectl set-timezone UTC`, ARCHITECTURE.md §10.7); Baghdad is UTC+3. Ubuntu installs
+security updates by itself (`unattended-upgrades`), and since Q154 also:
+
+- **updates Docker** (`docker-ce`, `containerd.io`, …), which comes from Docker's own apt repository — Ubuntu's
+  default settings leave it out, so Docker was never updated;
+- **installs at night**: 01:00 UTC (04:00 in Baghdad), after the 23:30 UTC backup, instead of Ubuntu's default of
+  06:00–07:00 UTC (09:00–10:00 in Baghdad, working hours) — a Docker update restarts Docker;
+- **reboots when an update needs it** (a new kernel or system library only takes effect after a reboot), at 02:00 UTC
+  (05:00 in Baghdad), before work starts and long after the backup.
+
+After a reboot nothing needs doing by hand: Docker starts at boot and every service has `restart: unless-stopped`. For
+a minute or so the site may answer `502` while the API starts and checks the database; the uptime monitor only
+alerts when it lasts longer.
+
+**Apply it** — on a new server it is part of §10.7; on an existing server (such as `pallets.example.com`) run once:
+
+```bash
+printf '%s\n' 'Unattended-Upgrade::Allowed-Origins:: "Docker:${distro_codename}";' 'Unattended-Upgrade::Automatic-Reboot "true";' 'Unattended-Upgrade::Automatic-Reboot-Time "02:00";' | sudo tee /etc/apt/apt.conf.d/52pallet-unattended && sudo mkdir -p /etc/systemd/system/apt-daily-upgrade.timer.d && printf '[Timer]\nOnCalendar=\nOnCalendar=*-*-* 01:00\nRandomizedDelaySec=10m\n' | sudo tee /etc/systemd/system/apt-daily-upgrade.timer.d/pallet.conf && sudo systemctl daemon-reload
+```
+
+**Check it** (and once a year, README "Yearly checklist"):
+
+- `apt-cache policy docker-ce` — the Docker line must read `o=Docker`, `a=noble`, `l=Docker CE`; that origin and
+  suite are what `"Docker:${distro_codename}"` matches. If it reads differently, change the line to match.
+- `sudo unattended-upgrade --dry-run --debug 2>&1 | grep -i 'allowed origins'` lists `o=Docker,a=noble`.
+- `systemctl list-timers apt-daily-upgrade` shows the next run at 01:00–01:10 UTC.
+- `last reboot | head -3` shows the reboots that happened; `/var/log/unattended-upgrades/` what was installed.
+
+**Optional — security fixes until 2034.** Ubuntu 24.04's standard support ends in April 2029. Ubuntu Pro is free for a
+few machines: sign up at ubuntu.com/pro, then `sudo pro attach <token>`. The same `unattended-upgrades` then installs
+its fixes (ESM) until 2034. Moving to the next Ubuntu LTS (ARCHITECTURE.md §13.9) is still the plan.
+
+## The deploy key
+
+The `Deploy` workflow connects with the runner's own `ssh` (ARCHITECTURE.md Q128). It trusts the server only through the
+`VPS_KNOWN_HOSTS` secret, and on the server the key may run `deploy.sh` and nothing else.
+
+Set up once (and again after rotating the key, `rotate-secrets.md`):
+
+1. On the VPS, print the host key's fingerprint: `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub`.
+2. On your own machine, fetch the host-key line and check that its fingerprint is the same as in step 1:
+
+   ```bash
+   ssh-keyscan -t ed25519 <vps-host> 2>/dev/null | tee known_hosts.line
+   ssh-keygen -lf known_hosts.line
+   ```
+
+   Only when the two fingerprints match: GitHub → Settings → Environments → `production` → add the secret
+   `VPS_KNOWN_HOSTS` with the content of `known_hosts.line`. (A custom SSH port: `ssh-keyscan -p <port>` writes
+   `[host]:port`, and `VPS_HOST` must then be written the same way — or leave the port at 22.)
+
+3. On the VPS, as the deploy user, prefix the CI key's line in `~/.ssh/authorized_keys` so it can only run the deploy:
+
+   ```text
+   restrict,command="/opt/pallet/deploy/deploy.sh" ssh-ed25519 AAAA… pallet-ci-deploy
+   ```
+
+   `deploy.sh` reads the requested SHA from `SSH_ORIGINAL_COMMAND` and refuses anything but a full 40-character SHA.
+   Check it from your machine with the CI key: `ssh -i pallet-deploy <user>@<vps> 'id'` must answer
+   `deploy: refused — this key may only run deploy.sh …`. Keep your own login key on a separate, unrestricted line.
+
+4. Delete the old secret `VPS_HOST_FINGERPRINT`; the workflow no longer reads it.
+
+If the server is rebuilt or its host key changes, the deploy stops at `Host key verification failed` — repeat steps 1–2.
